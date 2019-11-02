@@ -1,8 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 
-public class Login extends JFrame implements ActionListener, KeyListener {
+public class Login extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
 
 	private JButton singIn;
 	private JLabel user, empresa, rights, password, name;
@@ -13,7 +14,6 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 	private Color white = new Color(255, 255, 255);
 	private Color black = new Color(0,0,0);
 	private Color gray = new Color(224, 224, 224);
-	//private Color blueline = new Color(32,205,200);
 	private String patchLogo = "images/Logo.png";
 	private String patchEmpresa = "images/San-Roman-Logo.png";
 	private String patchAlert = "images/alert.png";
@@ -22,6 +22,10 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 	private ImageIcon ok = new ImageIcon(patchOk);
 	private char cop = 169;
 	private CustomFont cf = new CustomFont();
+	private Conexion db;
+	private Statement st;
+	private ResultSet rs;
+	private Boolean exist = false;
 
 	public Login(String title) {
 		this.setLayout(null);
@@ -32,6 +36,14 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setBackground(white);
 		this.setIconImage(new ImageIcon(getClass().getResource(patchLogo)).getImage());
+
+		//Iniciamos la conexion a la db
+		db = new Conexion();
+		try {
+			db.conectar();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+		}
 
 		ImageIcon empresa_imagen = new ImageIcon(patchEmpresa);
 
@@ -91,48 +103,185 @@ public class Login extends JFrame implements ActionListener, KeyListener {
 		singIn.addKeyListener(this);
 		add(singIn);
 	}
-
+	// Botones
+	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getSource() == singIn) {
 			String user1 = new String(userField.getText().trim());
 			String password1 = new String(passwordField.getPassword());
 			if(user1.isEmpty() || password1.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.");
-			} else if(user1.equals("Hola") && password1.equals("Hola")) {
-				JOptionPane.showMessageDialog(null, "           Bienvenido " + user1 + ".", "Entrar", 0, ok);
-				Menu m = new Menu("Men\u00FA");
-				m.setVisible(true);
-				this.setVisible(false);
+				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(null, "Usuario o contrase\u00f1a incorrectos.", "Error", 0, alert);
+				try {
+					st = db.getConexion().createStatement();
+					rs = st.executeQuery("SELECT nomm_usu, contra_usu FROM Usuario");
+					while (rs.next()) {
+						if (rs.getString("nom_usu").equals(user1) && rs.getString("contra_usu").equals(password1)){
+							exist = true;
+							break;
+						}
+					}
+				} catch (SQLException e) {
+					JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				if (exist) {
+					try {
+						db.desconectar();
+						JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				} else {
+					JOptionPane.showMessageDialog(null, "Ussuario o contrase\u00F1a incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 	}
 
-	//Se declaran por que luego me dice que me falta definir estos metodos abstractos del awt xd
+	//Teclado
+
+
+	@Override
 	public void keyTyped(KeyEvent evt) { //No se ocupa aun
         
     }
 
+	@Override
 	public void keyReleased(KeyEvent evt) { //No se ocupa aun
         
     }
 
+	@Override
 	public void keyPressed(KeyEvent evt) {
 		if(evt.getKeyCode() == 10) {
-			String user1 = new String(userField.getText().trim());
-			String password1 = new String(passwordField.getPassword());
-			if(user1.isEmpty() || password1.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.");
-			} else if(user1.equals("Hola") && password1.equals("Hola")) {
-				JOptionPane.showMessageDialog(null, "           Bienvenido " + user1 + ".", "Entrar", 0 , ok);
-				Menu m = new Menu("Men\u00FA");
-				m.setVisible(true);
-				this.setVisible(false);
-			} else {
-				JOptionPane.showMessageDialog(null, "Usuario o contrase\u00f1a incorrectos.", "Error", 0, alert);
+			if(evt.getSource() == singIn) {
+				String user1 = new String(userField.getText().trim());
+				String password1 = new String(passwordField.getPassword());
+				if(user1.isEmpty() || password1.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					try {
+						st = db.getConexion().createStatement();
+						rs = st.executeQuery("SELECT nomm_usu, contra_usu FROM Usuario");
+						while (rs.next()) {
+							if (rs.getString("nom_usu").equals(user1) && rs.getString("contra_usu").equals(password1)){
+								exist = true;
+								break;
+							}
+						}
+					} catch (SQLException e) {
+						JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					if (exist) {
+						try {
+							db.desconectar();
+							JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
+						} catch (SQLException e) {
+							JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+						}
+						
+					} else {
+						JOptionPane.showMessageDialog(null, "Ussuario o contrase\u00F1a incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
 			}
 		}
+	}
+
+	//Focus
+	@Override
+    public void focusGained(FocusEvent evt) {
+		if(evt.getSource() == this.userField) {
+			this.userField.setBackground(blue);
+			this.userField.setForeground(white);
+		} else if(evt.getSource() == this.passwordField) {
+			this.passwordField.setBackground(blue);
+			this.passwordField.setForeground(white);
+		} else if(evt.getSource() == this.singIn) {
+			this.singIn.setBackground(white);
+			this.singIn.setForeground(blue);
+		}
+    }
+
+	@Override
+    public void focusLost(FocusEvent evt) {
+		if(evt.getSource() == this.userField) {
+			this.userField.setBackground(gray);
+			this.userField.setForeground(blue);
+		} else if(evt.getSource() == this.passwordField) {
+			this.passwordField.setBackground(gray);
+			this.passwordField.setForeground(blue);
+		} else if(evt.getSource() == this.singIn) {
+			this.singIn.setBackground(blue);
+			this.singIn.setForeground(white);
+		}
+	}
+
+	//mouse
+	@Override
+    public void mouseReleased(MouseEvent evt) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent evt) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent evt) {
+        
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent evt) {
+        
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent evt) {
+        
+	}
+	
+	//ventana
+	@Override
+	public void windowClosing(WindowEvent evt) {
+		try {
+			db.desconectar();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent evt) {
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent evt) {
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent evt) {
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent evt) {
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent evt) {
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent evt) {
+		
 	}
 
 	public static void main(String args[]) {
