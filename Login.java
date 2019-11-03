@@ -6,19 +6,21 @@ import java.sql.*;
 public class Login extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
 
 	private JButton singIn;
-	private JLabel user, empresa, rights, password, name;
+	private JLabel user, empresa, rights, password, name, tira2, tira3, tira4;
 	private JTextField userField;
 	private JPasswordField passwordField;
 	//private Color rojochido = new Color(200, 50, 55);
 	private Color blue = new Color(0, 153, 153);
+	private Color blue2 = new Color(2,199,199);
+    private Color blue3= new Color(0, 220, 220);
+	private Color blue4 = new Color(0, 243, 243);
+	private Color bluefocus = new Color(167, 255, 255);
 	private Color white = new Color(255, 255, 255);
 	private Color black = new Color(0,0,0);
 	private Color gray = new Color(224, 224, 224);
 	private String patchLogo = "images/Logo.png";
 	private String patchEmpresa = "images/San-Roman-Logo.png";
-	private String patchAlert = "images/alert.png";
 	private String patchOk = "images/ok.png";
-	private ImageIcon alert = new ImageIcon(patchAlert);
 	private ImageIcon ok = new ImageIcon(patchOk);
 	private char cop = 169;
 	private CustomFont cf = new CustomFont();
@@ -69,6 +71,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		userField.setFont(new Font("Microsoft New Tai Lue", 0, 14));
 		userField.setForeground(black);
 		userField.addKeyListener(this);
+		userField.addFocusListener(this);
 		add(userField);
 
 		passwordField = new JPasswordField();
@@ -76,6 +79,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		passwordField.setBackground(gray);
 		passwordField.setForeground(black);
 		passwordField.addKeyListener(this);
+		passwordField.addFocusListener(this);
 		add(passwordField);
 
 		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
@@ -86,8 +90,26 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		rights.setForeground(white);
 		add(rights);
 
+		tira2 = new JLabel();
+        tira2.setBounds(0,60,810,9);
+        tira2.setBackground(blue2);
+        tira2.setOpaque(true);
+        add(tira2);
+
+        tira3 = new JLabel();
+        tira3.setBounds(0,69,810,7);
+        tira3.setBackground(blue3);
+        tira3.setOpaque(true);
+        add(tira3);
+
+        tira4 = new JLabel();
+        tira4.setBounds(0,76,810,4);
+        tira4.setBackground(blue4);
+        tira4.setOpaque(true);
+        add(tira4);
+
 		name = new JLabel("S I L I C A", SwingConstants.CENTER);
-		name.setBounds(0, 0, 630, 80);
+		name.setBounds(0, 0, 630, 70);
 		name.setFont(cf.MyFont(1, 50f));
 		name.setOpaque(true);
 		name.setBackground(blue);
@@ -101,8 +123,10 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		singIn.setForeground(white);
 		singIn.addActionListener(this);
 		singIn.addKeyListener(this);
+		singIn.addFocusListener(this);
 		add(singIn);
 	}
+	
 	// Botones
 	@Override
 	public void actionPerformed(ActionEvent evt) {
@@ -111,10 +135,12 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 			String password1 = new String(passwordField.getPassword());
 			if(user1.isEmpty() || password1.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+				userField.setText(null);
+				passwordField.setText(null);
 			} else {
 				try {
 					st = db.getConexion().createStatement();
-					rs = st.executeQuery("SELECT nomm_usu, contra_usu FROM Usuario");
+					rs = st.executeQuery("SELECT nom_usu, contra_usu FROM Usuario");
 					while (rs.next()) {
 						if (rs.getString("nom_usu").equals(user1) && rs.getString("contra_usu").equals(password1)){
 							exist = true;
@@ -127,21 +153,21 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 				if (exist) {
 					try {
 						db.desconectar();
-						JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
+						JOptionPane.showMessageDialog(null, "          Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
 					} catch (SQLException e) {
 						JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
+						userField.setText(null);
+						passwordField.setText(null);
 					}
 					
 				} else {
-					JOptionPane.showMessageDialog(null, "Ussuario o contrase\u00F1a incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Usuario o contrase\u00F1a incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
 	}
 
 	//Teclado
-
-
 	@Override
 	public void keyTyped(KeyEvent evt) { //No se ocupa aun
         
@@ -160,10 +186,12 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 				String password1 = new String(passwordField.getPassword());
 				if(user1.isEmpty() || password1.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+					userField.setText(null);
+					passwordField.setText(null);
 				} else {
 					try {
 						st = db.getConexion().createStatement();
-						rs = st.executeQuery("SELECT nomm_usu, contra_usu FROM Usuario");
+						rs = st.executeQuery("SELECT nom_usu, contra_usu FROM Usuario");
 						while (rs.next()) {
 							if (rs.getString("nom_usu").equals(user1) && rs.getString("contra_usu").equals(password1)){
 								exist = true;
@@ -176,13 +204,18 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 					if (exist) {
 						try {
 							db.desconectar();
-							JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
+							JOptionPane.showMessageDialog(null, "          Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
+							Menu menu = new Menu("Men\u00FA");
+							menu.setVisible(true);
+							this.setVisible(false);
 						} catch (SQLException e) {
 							JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						
 					} else {
-						JOptionPane.showMessageDialog(null, "Ussuario o contrase\u00F1a incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Usuario o contrase\u00F1a incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+						userField.setText(null);
+						passwordField.setText(null);
 					}
 				}
 			}
@@ -193,14 +226,14 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 	@Override
     public void focusGained(FocusEvent evt) {
 		if(evt.getSource() == this.userField) {
-			this.userField.setBackground(blue);
-			this.userField.setForeground(white);
+			this.userField.setBackground(bluefocus);
+			this.userField.setForeground(black);
 		} else if(evt.getSource() == this.passwordField) {
-			this.passwordField.setBackground(blue);
-			this.passwordField.setForeground(white);
+			this.passwordField.setBackground(bluefocus);
+			this.passwordField.setForeground(black);
 		} else if(evt.getSource() == this.singIn) {
-			this.singIn.setBackground(white);
-			this.singIn.setForeground(blue);
+			this.singIn.setBackground(bluefocus);
+			this.singIn.setForeground(black);
 		}
     }
 
@@ -208,10 +241,10 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
     public void focusLost(FocusEvent evt) {
 		if(evt.getSource() == this.userField) {
 			this.userField.setBackground(gray);
-			this.userField.setForeground(blue);
+			this.userField.setForeground(black);
 		} else if(evt.getSource() == this.passwordField) {
 			this.passwordField.setBackground(gray);
-			this.passwordField.setForeground(blue);
+			this.passwordField.setForeground(black);
 		} else if(evt.getSource() == this.singIn) {
 			this.singIn.setBackground(blue);
 			this.singIn.setForeground(white);
