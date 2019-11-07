@@ -18,8 +18,8 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
     private String patchSale = "images/sale.png";
     private String patchProvider = "images/provider.png";
     private String patchEmployee = "images/employee.png";
-    private JLabel tira, tira2, tira3, tira4;
-    private JLabel productLabel, saleLabel, providerLabel, employeeLabel, rights;
+    private JLabel tira, tira2, tira3, tira4, rights;
+    private JLabel productLabel, saleLabel, providerLabel, employeeLabel;
     private ImageIcon productImg = new ImageIcon(patchProduct);
     private ImageIcon saleImg = new ImageIcon(patchSale);
     private ImageIcon providerImg = new ImageIcon(patchProvider);
@@ -144,14 +144,10 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
     //Botones
     @Override
     public void actionPerformed(ActionEvent evt) {
-		//if(evt.getSource() == cerrar) {
-		//	Login login = new Login("Ingresar");
-		//	login.setVisible(true);
-		//	this.setVisible(false);
-		
-        //} else 
-        if(evt.getSource() == product) {
-
+        if(evt.getSource() == sale) {
+            Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
+            c1.setVisible(true);
+            this.setVisible(false);
 		} 
     }
     
@@ -168,7 +164,13 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
 
     @Override
 	public void keyPressed(KeyEvent evt) {
-		
+		if(evt.getKeyCode() == 10){
+            if(evt.getSource() == sale) {
+                Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
+                c1.setVisible(true);
+                this.setVisible(false);
+            }
+        }
     }
     
     //Focus
