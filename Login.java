@@ -127,6 +127,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		singIn.addActionListener(this);
 		singIn.addKeyListener(this);
 		singIn.addFocusListener(this);
+		singIn.addMouseListener(this);
 		add(singIn);
 	}
 	
@@ -273,12 +274,20 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 
     @Override
     public void mouseExited(MouseEvent evt) {
-        
+        if (evt.getSource() == this.singIn) {
+			this.singIn.setBackground(blue);
+			this.singIn.setForeground(white);
+		}
     }
 
     @Override
     public void mouseEntered(MouseEvent evt) {
-        
+		this.singIn.setBackground(blue);
+		this.singIn.setForeground(white);
+		if (evt.getSource() == this.singIn){
+			this.singIn.setBackground(bluefocus);
+			this.singIn.setForeground(black);
+		}
     }
 
     @Override

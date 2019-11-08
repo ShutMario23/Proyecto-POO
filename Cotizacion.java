@@ -8,7 +8,7 @@ import javax.swing.table.*;
 public class Cotizacion extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
 
 	private Color blue = new Color(0, 153, 153);
-    private Color blue2 = new Color(2,199,199);
+    private Color blue2 = new Color(2, 199, 199);
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
@@ -17,7 +17,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private Color gray = new Color(224, 224, 224);
 	private JLabel tira, tira2, tira3, tira4, rights;
 	private JButton cancelar, agregar, guardar, borrar, agregarcot, regresar;
-	private JLabel no_cot, fechaLabel, sbt, total, iva, id_cliente, nom_cliente, tel, dir, corr, emp;
+	private JLabel no_cot, fechaLabel, sbt, total, iva, anticipo, pendiente, id_cliente, nom_cliente, tel, dir, corr;
 	private JLabel prod, pre_uni, dim, x, cant, sbtotal, mas, menos, tipo, id_prod;
 	private JTextField no_cotField, pre_uni_txt, dim_largo, dim_ancho, cant_txt, sbtotal_txt, id_prod_txt;
 	private JTextField id_cliente_txt, nom_cliente_txt, tel_txt, dir_txt, corr_txt;
@@ -31,7 +31,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private JTable tabla;
 	private JScrollPane scroll;
 	private JPanel agregarCot, mostrarCot;
-	private JComboBox<String> prod_com, tipo_prod, emp_txt;
+	private JComboBox<String> prod_com, tipo_prod;
 	private char cop = 169;
 
 	public Cotizacion(String title) {
@@ -136,62 +136,47 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		nom_cliente_txt.addFocusListener(this);
 		mostrarCot.add(nom_cliente_txt);
 
-		tel = new JLabel("T\u00E9lefono");
-		tel.setBounds(57, 141, 75, 25);
-		tel.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		tel.setForeground(black);
-		mostrarCot.add(tel);
-
-		tel_txt = new JTextField();
-		tel_txt.setBounds(159, 139, 171, 30);
-		tel_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		tel_txt.setBackground(gray);
-		tel_txt.setForeground(black);
-		tel_txt.addFocusListener(this);
-		mostrarCot.add(tel_txt);
-
 		dir = new JLabel("Direcci\u00F3n");
-		dir.setBounds(352, 141, 80, 25);
+		dir.setBounds(57, 141, 80, 25);
 		dir.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dir.setForeground(black);
 		mostrarCot.add(dir);
 
 		dir_txt = new JTextField();
-		dir_txt.setBounds(444, 139, 326, 30);
+		dir_txt.setBounds(159, 139, 612, 30);
 		dir_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dir_txt.setBackground(gray);
 		dir_txt.setForeground(black);
 		dir_txt.addFocusListener(this);
 		mostrarCot.add(dir_txt);
 
+		tel = new JLabel("T\u00E9lefono");
+		tel.setBounds(57, 184, 75, 25);
+		tel.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		tel.setForeground(black);
+		mostrarCot.add(tel);
+
+		tel_txt = new JTextField();
+		tel_txt.setBounds(159, 182, 171, 30);
+		tel_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		tel_txt.setBackground(gray);
+		tel_txt.setForeground(black);
+		tel_txt.addFocusListener(this);
+		mostrarCot.add(tel_txt);
+
 		corr = new JLabel("Correo");
-		corr.setBounds(57, 184, 58, 25);
+		corr.setBounds(359, 184, 58, 25);
 		corr.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		corr.setForeground(black);
 		mostrarCot.add(corr);
 
 		corr_txt = new JTextField();
-		corr_txt.setBounds(159, 182, 279, 30);
+		corr_txt.setBounds(444, 182, 327, 30);
 		corr_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		corr_txt.setBackground(gray);
 		corr_txt.setForeground(black);
 		corr_txt.addFocusListener(this);
 		mostrarCot.add(corr_txt);
-
-		emp = new JLabel("Empleado");
-		emp.setBounds(57, 225, 84, 25);
-		emp.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		emp.setForeground(black);
-		mostrarCot.add(emp);
-
-		emp_txt = new JComboBox<>();
-		emp_txt.addItem("");
-		emp_txt.setBounds(159, 223, 461, 30);
-        emp_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-        emp_txt.setBackground(gray);
-		emp_txt.setForeground(black);
-		emp_txt.addFocusListener(this);
-		mostrarCot.add(emp_txt);
 
 		String[] campos = new String[]{"Id", "Nombre", "Tipo", "Precio unitario", "Largo", "Ancho", 
 									   "Cantidad", "Precio total"};
@@ -207,9 +192,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
         tabla.getTableHeader().setReorderingAllowed(false);
         tabla.getTableHeader().setResizingAllowed(false);
         scroll = new JScrollPane(tabla);
-		scroll.setBounds(30, 275, 750, 180);
-		tabla.getColumnModel().getColumn(0).setPreferredWidth(30); //Id
-		tabla.getColumnModel().getColumn(1).setPreferredWidth(160); //Nombre
+		scroll.setBounds(30, 225, 750, 180);
+		tabla.getColumnModel().getColumn(0).setPreferredWidth(25); //Id
+		tabla.getColumnModel().getColumn(1).setPreferredWidth(140); //Nombre
 		tabla.getColumnModel().getColumn(2).setPreferredWidth(80); //Tipo
 		tabla.getColumnModel().getColumn(3).setPreferredWidth(120); //Precio unitario
 		tabla.getColumnModel().getColumn(4).setPreferredWidth(80); //Largo
@@ -230,57 +215,73 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		modelo.addRow(new String[]{"2", "Cristal", "Barandal", "1200", "800", "600", "5", "1200"});
 		
 		sbt = new JLabel("Subtotal: \u0024 0");
-		sbt.setBounds(599, 478, 150, 25);
+		sbt.setBounds(250, 423, 200, 25);
 		sbt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbt.setForeground(black);
 		mostrarCot.add(sbt);
 
-		iva = new JLabel("IVA: 16 \u0025");
-		iva.setBounds(640, 508, 80, 25);
+		iva = new JLabel("IVA:     + \u0024 0");
+		iva.setBounds(250, 453, 150, 25);
 		iva.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		iva.setForeground(black);
 		mostrarCot.add(iva);
 		
-		total = new JLabel("Total: \u0024 0");
-		total.setBounds(627, 538, 150, 25);
+		total = new JLabel("Total:      \u0024 0");
+		total.setBounds(250, 481, 200, 25);
 		total.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		total.setForeground(black);
 		mostrarCot.add(total);
 
+		anticipo = new JLabel("Anticipo:");
+		anticipo.setBounds(520, 423, 100, 25);
+		anticipo.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		anticipo.setForeground(black);
+		mostrarCot.add(anticipo);
+
+		pendiente = new JLabel("Pendiente:");
+		pendiente.setBounds(520, 453, 100, 25);
+		pendiente.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		pendiente.setForeground(black);
+		mostrarCot.add(pendiente);
+
 		cancelar = new JButton("Cancelar");
-		cancelar.setBounds(30, 533, 100, 30);
+		cancelar.setBounds(82, 533, 100, 30);
 		cancelar.setBackground(blue);
 		cancelar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		cancelar.setForeground(white);
 		cancelar.addActionListener(this);
 		cancelar.addKeyListener(this);
+		cancelar.addMouseListener(this);
 		mostrarCot.add(cancelar);
 
 		borrar = new JButton("Borrar");
-		borrar.setBounds(170, 533, 100, 30);
+		borrar.setBounds(264, 533, 100, 30);
 		borrar.setBackground(blue);
 		borrar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		borrar.setForeground(white);
 		borrar.addActionListener(this);
 		borrar.addKeyListener(this);
+		borrar.addMouseListener(this);
 		mostrarCot.add(borrar);
 
 		agregar = new JButton("Agregar");
-		agregar.setBounds(310, 533, 100, 30);
+		agregar.setBounds(446, 533, 100, 30);
 		agregar.setBackground(blue);
 		agregar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		agregar.setForeground(white);
 		agregar.addActionListener(this);
 		agregar.addKeyListener(this);
+		agregar.addMouseListener(this);
 		mostrarCot.add(agregar);
 
 		guardar = new JButton("Guardar");
-		guardar.setBounds(450, 533, 100, 30);
+		guardar.setBounds(628, 533, 100, 30);
 		guardar.setBackground(blue);
 		guardar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		guardar.setForeground(white);
 		guardar.addActionListener(this);
 		guardar.addKeyListener(this);
+		guardar.addMouseListener(this);
 		mostrarCot.add(guardar);
 
 		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
@@ -464,6 +465,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		regresar.setForeground(white);
 		regresar.addActionListener(this);
 		regresar.addFocusListener(this);
+		regresar.addMouseListener(this);
 		agregarCot.add(regresar);
 
 		agregarcot = new JButton("Agregar");
@@ -473,6 +475,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarcot.setForeground(white);
 		agregarcot.addFocusListener(this);
 		agregarcot.addActionListener(this);
+		agregarcot.addMouseListener(this);
 		agregarCot.add(agregarcot);
 
 		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
@@ -591,8 +594,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.dir_txt.setBackground(bluefocus);
 		} else if (evt.getSource() == this.corr_txt) {
 			this.corr_txt.setBackground(bluefocus);
-		} else if (evt.getSource() == this.emp_txt) {
-			this.emp_txt.setBackground(bluefocus);
 		} else if (evt.getSource() == this.prod_com) {
 			this.prod_com.setBackground(bluefocus);
 		} else if (evt.getSource() == this.dim_largo) {
@@ -601,10 +602,24 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.dim_ancho.setBackground(bluefocus);
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(bluefocus);
+		} else if (evt.getSource() == this.cancelar) {
+			this.cancelar.setBackground(bluefocus);
+			this.cancelar.setForeground(black);
+		} else if (evt.getSource() == this.borrar) {
+			this.borrar.setBackground(bluefocus);
+			this.borrar.setForeground(black);
+		} else if (evt.getSource() == this.agregar) {
+			this.agregar.setBackground(bluefocus);
+			this.agregar.setForeground(black);
+		} else if (evt.getSource() == this.guardar) {
+			this.guardar.setBackground(bluefocus);
+			this.guardar.setForeground(black);
 		} else if (evt.getSource() == this.regresar) {
 			this.regresar.setBackground(bluefocus);
+			this.regresar.setForeground(black);
 		} else if (evt.getSource() == this.agregarcot) {
 			this.agregarcot.setBackground(bluefocus);
+			this.agregarcot.setForeground(black);
 		}
     }
 
@@ -620,8 +635,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.dir_txt.setBackground(gray);
 		} else if (evt.getSource() == this.corr_txt) {
 			this.corr_txt.setBackground(gray);
-		} else if (evt.getSource() == this.emp_txt) {
-			this.emp_txt.setBackground(gray);
 		} else if (evt.getSource() == this.prod_com) {
 			this.prod_com.setBackground(gray);
 		} else if (evt.getSource() == this.dim_largo) {
@@ -630,10 +643,24 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.dim_ancho.setBackground(gray);
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(gray);
+		} else if (evt.getSource() == this.cancelar) {
+			this.cancelar.setBackground(blue);
+			this.cancelar.setForeground(white);
+		} else if (evt.getSource() == this.borrar) {
+			this.borrar.setBackground(blue);
+			this.borrar.setForeground(white);
+		} else if (evt.getSource() == this.agregar) {
+			this.agregar.setBackground(blue);
+			this.agregar.setForeground(white);
+		} else if (evt.getSource() == this.guardar) {
+			this.guardar.setBackground(blue);
+			this.guardar.setForeground(white);
 		} else if (evt.getSource() == this.regresar) {
 			this.regresar.setBackground(blue);
+			this.regresar.setForeground(white);
 		} else if (evt.getSource() == this.agregarcot) {
 			this.agregarcot.setBackground(blue);
+			this.agregarcot.setForeground(white);
 		}
 	}
 
@@ -650,12 +677,60 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
     @Override
     public void mouseExited(MouseEvent evt) {
-        
+        if (evt.getSource() == this.cancelar) {
+			this.cancelar.setBackground(blue);
+			this.cancelar.setForeground(white);
+		} else if (evt.getSource() == this.borrar) {
+			this.borrar.setBackground(blue);
+			this.borrar.setForeground(white);
+		} else if (evt.getSource() == this.agregar) {
+			this.agregar.setBackground(blue);
+			this.agregar.setForeground(white);
+		} else if (evt.getSource() == this.guardar) {
+			this.guardar.setBackground(blue);
+			this.guardar.setForeground(white);
+		} else if (evt.getSource() == this.regresar) {
+			this.regresar.setBackground(blue);
+			this.regresar.setForeground(white);
+		} else if (evt.getSource() == this.agregarcot) {
+			this.agregarcot.setBackground(blue);
+			this.agregarcot.setForeground(white);
+		}
     }
 
     @Override
     public void mouseEntered(MouseEvent evt) {
-        
+		this.cancelar.setBackground(blue);
+		this.cancelar.setForeground(white);
+		this.borrar.setBackground(blue);
+		this.borrar.setForeground(white);
+		this.agregar.setBackground(blue);
+		this.agregar.setForeground(white);
+		this.guardar.setBackground(blue);
+		this.guardar.setForeground(white);
+		this.regresar.setBackground(blue);
+		this.regresar.setForeground(white);
+		this.agregarcot.setBackground(blue);
+		this.agregarcot.setForeground(white);
+		if (evt.getSource() == this.cancelar) {
+			this.cancelar.setBackground(bluefocus);
+			this.cancelar.setForeground(black);
+		} else if (evt.getSource() == this.borrar) {
+			this.borrar.setBackground(bluefocus);
+			this.borrar.setForeground(black);
+		} else if (evt.getSource() == this.agregar) {
+			this.agregar.setBackground(bluefocus);
+			this.agregar.setForeground(black);
+		} else if (evt.getSource() == this.guardar) {
+			this.guardar.setBackground(bluefocus);
+			this.guardar.setForeground(black);
+		} else if (evt.getSource() == this.regresar) {
+			this.regresar.setBackground(bluefocus);
+			this.regresar.setForeground(black);
+		} else if (evt.getSource() == this.agregarcot) {
+			this.agregarcot.setBackground(bluefocus);
+			this.agregarcot.setForeground(black);
+		}
     }
 
     @Override
