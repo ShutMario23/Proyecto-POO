@@ -2,7 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Menu extends JFrame implements ActionListener, KeyListener, FocusListener {
+//Update
+
+public class Menu extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener {
 
     private Color blue = new Color(0, 153, 153);
     private Color blue2 = new Color(2,199,199);
@@ -46,6 +48,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
 		product.addActionListener(this);
         product.addKeyListener(this);
         product.addFocusListener(this);
+        product.addMouseListener(this);
         add(product);
         
         productLabel = new JLabel("Productos", SwingConstants.CENTER);
@@ -64,6 +67,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         sale.addActionListener(this);
         sale.addKeyListener(this);
         sale.addFocusListener(this);
+        sale.addMouseListener(this);
         add(sale);
 
         saleLabel = new JLabel("Cotizaci\u00F3n", SwingConstants.CENTER);
@@ -82,6 +86,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         provider.addActionListener(this);
         provider.addKeyListener(this);
         provider.addFocusListener(this);
+        provider.addMouseListener(this);
         add(provider);
 
         providerLabel = new JLabel("Proveedor", SwingConstants.CENTER);
@@ -100,6 +105,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         employee.addActionListener(this);
         employee.addKeyListener(this);
         employee.addFocusListener(this);
+        employee.addMouseListener(this);
         add(employee);
 
         employeeLabel = new JLabel("Empleados", SwingConstants.CENTER);
@@ -200,5 +206,49 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         }
 	}
 
+    //mouseListener
+    @Override
+    public void mouseReleased(MouseEvent evt) {
 
+    }
+
+    @Override
+    public void mousePressed(MouseEvent evt) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent evt) {
+        if(evt.getSource() == this.product) {
+            this.product.setBackground(white);
+        } else if(evt.getSource() == this.sale) {
+            this.sale.setBackground(white);
+        } else if(evt.getSource() == this.provider) {
+            this.provider.setBackground(white);
+        } else if(evt.getSource() == this.employee) {
+            this.employee.setBackground(white);
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent evt) {
+        this.product.setBackground(white);
+        this.sale.setBackground(white);
+        this.provider.setBackground(white);
+        this.employee.setBackground(white);
+        if(evt.getSource() == this.product) {
+            this.product.setBackground(bluefocus);
+        } else if(evt.getSource() == this.sale) {
+            this.sale.setBackground(bluefocus);
+        } else if(evt.getSource() == this.provider) {
+            this.provider.setBackground(bluefocus);
+        } else if(evt.getSource() == this.employee) {
+            this.employee.setBackground(bluefocus);
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent evt) {
+
+    }
 }

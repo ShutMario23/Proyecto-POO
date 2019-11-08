@@ -72,7 +72,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			st = db.getConexion().createStatement();
 			rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
 			rs.next();
-			id = rs.getInt(1); //maxima id de cotizaciones
+			id = rs.getInt(1); //maxima id de cotizaciones + 1
 		} catch(SQLException err) {
 			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -346,7 +346,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarCot.add(prod);
 
 		prod_com = new JComboBox<>();
-		prod_com.addItem("");
+		prod_com.addItem("Cristal");
 		prod_com.setBounds(163, 241, 248, 30);
         prod_com.setFont(new Font("Microsoft New Tai Lue", 0, 18));
         prod_com.setBackground(gray);
@@ -361,7 +361,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarCot.add(pre_uni);
 
 		pre_uni_txt = new JTextField();
-		pre_uni_txt.setText("\u0024 0");
+		pre_uni_txt.setText("0");
 		pre_uni_txt.setBounds(581, 241, 159, 30);
 		pre_uni_txt.setBackground(white);
 		pre_uni_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
@@ -404,7 +404,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarCot.add(tipo);
 
 		tipo_prod = new JComboBox<>();
-		tipo_prod.addItem("");
+		tipo_prod.addItem("Barandal");
 		tipo_prod.setBounds(517, 308, 223, 30);
         tipo_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
         tipo_prod.setBackground(gray);
@@ -453,7 +453,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		sbtotal_txt.setBackground(white);
 		sbtotal_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbtotal_txt.setForeground(black);
-		sbtotal_txt.setText("\u0024 0");
+		sbtotal_txt.setText("0");
 		sbtotal_txt.setEditable(false);
 		agregarCot.add(sbtotal_txt);
 
@@ -472,6 +472,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarcot.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		agregarcot.setForeground(white);
 		agregarcot.addFocusListener(this);
+		agregarcot.addActionListener(this);
 		agregarCot.add(agregarcot);
 
 		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
@@ -525,17 +526,37 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} else if(evt.getSource() == this.regresar) {
 			mostrarCot.setVisible(true);
 			agregarCot.setVisible(false);
+		} else if(evt.getSource() == this.agregarcot) {
+			String id_cotizacion = no_cotField.getText();
+			try {
+				int id_carrito;
+				String id_producto;
+				String nombre_producto = prod_com.getSelectedItem().toString();
+				String tipo_producto = tipo_prod.getSelectedItem().toString();
+				rs = st.executeQuery("SELECT id_prod FROM Producto WHERE nom_prod = '" + nombre_producto + "'");
+				rs.next();
+				id_producto = rs.getString("id_prod");
+				rs = st.executeQuery("SELECT MAX(id_carrito) FROM Carrito");
+				rs.next();
+				id_carrito = rs.getInt(1) + 1;
+				st.executeUpdate("INSERT INTO Carrito (id_carrito, id_prod, id_cot, ancho_prod, largo_prod, tipo_prod, " + 
+					"can_prod, subt_prod) VALUES ('" + Integer.valueOf(id_carrito).toString() + "', '" + id_producto + "', '" +
+					id_cotizacion + "', '" + dim_largo.getText() + "', '" + dim_ancho.getText() + "', '" + tipo_producto + 
+					"', '" + cant_txt.getText() + "', '" + sbtotal_txt.getText() + "')");
+			} catch(SQLException err) {
+				JOptionPane.showMessageDialog(null, err);
+			}
 		}
 	}
 
 	//teclado
 	@Override
 	public void keyTyped(KeyEvent evt) {
-        if(evt.getSource() == this.no_cotField) {
+       /* if(evt.getSource() == this.no_cotField) {
 			if(this.no_cotField.getText().length() >= 4) {
 				evt.consume();
 			}
-		}
+		} */
     }
 
 	@Override
@@ -654,7 +675,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		}
 		this.sbtotal_txt.setEditable(true);
 		Integer precio = Integer.parseInt(this.cant_txt.getText()) * 100;
-		this.sbtotal_txt.setText("\u0024 " + precio.toString());
+		this.sbtotal_txt.setText(precio.toString());
 		this.sbtotal_txt.setEditable(false);
 	}
 	
