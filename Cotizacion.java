@@ -17,10 +17,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private Color gray = new Color(224, 224, 224);
 	private JLabel tira, tira2, tira3, tira4, rights;
 	private JButton cancelar, agregar, guardar, borrar, agregarcot, regresar;
-	private JLabel no_cot, fechaLabel, sbt, total, iva, anticipo, pendiente, id_cliente, nom_cliente, tel, dir, corr;
-	private JLabel prod, pre_uni, dim, x, cant, sbtotal, mas, menos, tipo, id_prod;
-	private JTextField no_cotField, pre_uni_txt, dim_largo, dim_ancho, cant_txt, sbtotal_txt, id_prod_txt;
-	private JTextField id_cliente_txt, nom_cliente_txt, tel_txt, dir_txt, corr_txt;
+	private JLabel no_cot, fechaLabel, sbt, total, iva, anti, pend, id_cliente, nom_cliente, tel, dir, corr;
+	private JLabel prod, pre_uni, dim, x, cant, sbtotal, mas, menos, tipo, id_prod, diseno;
+	private JTextField no_cotField, pre_uni_txt, dim_largo, dim_ancho, cant_txt, sbtotal_txt, id_prod_txt, diseno_txt;
+	private JTextField id_cliente_txt, nom_cliente_txt, tel_txt, dir_txt, corr_txt, tot_txt, iva_txt, sbt_txt, anti_txt, pend_txt;
 	private Conexion db;
 	private Statement st;
 	private ResultSet rs;
@@ -178,7 +178,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		corr_txt.addFocusListener(this);
 		mostrarCot.add(corr_txt);
 
-		String[] campos = new String[]{"Id", "Nombre", "Tipo", "Precio unitario", "Largo", "Ancho", 
+		String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho", 
 									   "Cantidad", "Precio total"};
 
 		modelo = new DefaultTableModel(null, campos);
@@ -195,12 +195,13 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		scroll.setBounds(30, 225, 750, 180);
 		tabla.getColumnModel().getColumn(0).setPreferredWidth(25); //Id
 		tabla.getColumnModel().getColumn(1).setPreferredWidth(140); //Nombre
-		tabla.getColumnModel().getColumn(2).setPreferredWidth(80); //Tipo
-		tabla.getColumnModel().getColumn(3).setPreferredWidth(120); //Precio unitario
-		tabla.getColumnModel().getColumn(4).setPreferredWidth(80); //Largo
-		tabla.getColumnModel().getColumn(5).setPreferredWidth(80); //Ancho
-		tabla.getColumnModel().getColumn(6).setPreferredWidth(100); //Cantidad
-		tabla.getColumnModel().getColumn(7).setPreferredWidth(100); //Precio total
+		tabla.getColumnModel().getColumn(2).setPreferredWidth(70); //Tipo
+		tabla.getColumnModel().getColumn(3).setPreferredWidth(95); //Precio unitario
+		tabla.getColumnModel().getColumn(4).setPreferredWidth(80); //Diseño
+		tabla.getColumnModel().getColumn(5).setPreferredWidth(60); //Largo
+		tabla.getColumnModel().getColumn(6).setPreferredWidth(60); //Ancho
+		tabla.getColumnModel().getColumn(7).setPreferredWidth(80); //Cantidad
+		tabla.getColumnModel().getColumn(8).setPreferredWidth(95); //Precio total
 		tabla.setRowHeight(25);
 		tabla.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16)); 
@@ -211,41 +212,91 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		tabla.setFont(new Font("Microsoft New Tai Lue", 0, 14));
 		mostrarCot.add(scroll);
 
-		modelo.addRow(new String[]{"1", "Cristal", "Barandal", "1200", "800", "600", "5", "1200"});
-		modelo.addRow(new String[]{"2", "Cristal", "Barandal", "1200", "800", "600", "5", "1200"});
+		modelo.addRow(new String[]{"1", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
+		modelo.addRow(new String[]{"2", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
 		
-		sbt = new JLabel("Subtotal: \u0024 0");
-		sbt.setBounds(250, 423, 200, 25);
+		sbt = new JLabel("Subtotal:");
+		sbt.setBounds(103, 422, 80, 25);
 		sbt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbt.setForeground(black);
 		mostrarCot.add(sbt);
 
-		iva = new JLabel("IVA:     + \u0024 0");
-		iva.setBounds(250, 453, 150, 25);
+		sbt_txt = new JTextField();
+		sbt_txt.setText("");
+		sbt_txt.setBounds(200, 419, 150, 30);
+		sbt_txt.setBackground(white);
+		sbt_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		sbt_txt.setForeground(blue);
+		sbt_txt.setHorizontalAlignment(JTextField.CENTER);
+		sbt_txt.setEditable(false);
+		mostrarCot.add(sbt_txt);
+
+		iva = new JLabel("IVA:");
+		iva.setBounds(103, 457, 80, 25);
 		iva.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		iva.setForeground(black);
 		mostrarCot.add(iva);
+
+		iva_txt = new JTextField();
+		iva_txt.setText("");
+		iva_txt.setBounds(200, 454, 150, 30);
+		iva_txt.setBackground(white);
+		iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		iva_txt.setForeground(blue);
+		iva_txt.setHorizontalAlignment(JTextField.CENTER);
+		iva_txt.setEditable(false);
+		mostrarCot.add(iva_txt);
 		
-		total = new JLabel("Total:      \u0024 0");
-		total.setBounds(250, 481, 200, 25);
+		total = new JLabel("Total:");
+		total.setBounds(103, 492, 80, 25);
 		total.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		total.setForeground(black);
 		mostrarCot.add(total);
 
-		anticipo = new JLabel("Anticipo:");
-		anticipo.setBounds(520, 423, 100, 25);
-		anticipo.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		anticipo.setForeground(black);
-		mostrarCot.add(anticipo);
+		tot_txt = new JTextField();
+		tot_txt.setText("");
+		tot_txt.setBounds(200, 489, 150, 30);
+		tot_txt.setBackground(white);
+		tot_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		tot_txt.setForeground(blue);
+		tot_txt.setHorizontalAlignment(JTextField.CENTER);
+		tot_txt.setEditable(false);
+		mostrarCot.add(tot_txt);
 
-		pendiente = new JLabel("Pendiente:");
-		pendiente.setBounds(520, 453, 100, 25);
-		pendiente.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		pendiente.setForeground(black);
-		mostrarCot.add(pendiente);
+		anti = new JLabel("Anticipo:");
+		anti.setBounds(455, 422, 100, 25);
+		anti.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		anti.setForeground(black);
+		mostrarCot.add(anti);
+
+		anti_txt = new JTextField();
+		anti_txt.setText("");
+		anti_txt.setBounds(552, 419, 150, 30);
+		anti_txt.setBackground(gray);
+		anti_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		anti_txt.setForeground(blue);
+		anti_txt.setHorizontalAlignment(JTextField.CENTER);
+		anti_txt.addFocusListener(this);
+		mostrarCot.add(anti_txt);
+
+		pend = new JLabel("Pendiente:");
+		pend.setBounds(455, 457, 100, 25);
+		pend.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		pend.setForeground(black);
+		mostrarCot.add(pend);
+
+		pend_txt = new JTextField();
+		pend_txt.setText("");
+		pend_txt.setBounds(552, 454, 150, 30);
+		pend_txt.setBackground(white);
+		pend_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		pend_txt.setForeground(blue);
+		pend_txt.setHorizontalAlignment(JTextField.CENTER);
+		pend_txt.setEditable(false);
+		mostrarCot.add(pend_txt);
 
 		cancelar = new JButton("Cancelar");
-		cancelar.setBounds(82, 533, 100, 30);
+		cancelar.setBounds(82, 540, 100, 30);
 		cancelar.setBackground(blue);
 		cancelar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		cancelar.setForeground(white);
@@ -255,7 +306,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		mostrarCot.add(cancelar);
 
 		borrar = new JButton("Borrar");
-		borrar.setBounds(264, 533, 100, 30);
+		borrar.setBounds(264, 540, 100, 30);
 		borrar.setBackground(blue);
 		borrar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		borrar.setForeground(white);
@@ -265,7 +316,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		mostrarCot.add(borrar);
 
 		agregar = new JButton("Agregar");
-		agregar.setBounds(446, 533, 100, 30);
+		agregar.setBounds(446, 540, 100, 30);
 		agregar.setBackground(blue);
 		agregar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		agregar.setForeground(white);
@@ -275,7 +326,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		mostrarCot.add(agregar);
 
 		guardar = new JButton("Guardar");
-		guardar.setBounds(628, 533, 100, 30);
+		guardar.setBounds(628, 540, 100, 30);
 		guardar.setBackground(blue);
 		guardar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		guardar.setForeground(white);
@@ -324,60 +375,89 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		fechaLabel.setForeground(black);
 		agregarCot.add(fechaLabel);
 
-		id_prod = new JLabel("Id Producto");
-		id_prod.setBounds(30, 144, 128, 25);
-		id_prod.setFont(new Font("Microsoft New Tai Lue", 1, 18));
-		id_prod.setForeground(blue);
-		agregarCot.add(id_prod);
+		tipo = new JLabel("Tipo");
+		tipo.setBounds(57, 150, 45, 25);
+		tipo.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		tipo.setForeground(black);
+		agregarCot.add(tipo);
 
-		id_prod_txt = new JTextField();
-		id_prod_txt.setText("");
-		id_prod_txt.setBounds(159, 142, 50, 30);
-		id_prod_txt.setBackground(white);
-		id_prod_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
-		id_prod_txt.setForeground(blue);
-		id_prod_txt.setHorizontalAlignment(JTextField.CENTER);
-		id_prod_txt.setEditable(false);
-		agregarCot.add(id_prod_txt);
+		tipo_prod = new JComboBox<>();
+		tipo_prod.addItem("Barandal");
+		tipo_prod.setBounds(120, 147, 223, 30);
+        tipo_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+        tipo_prod.setBackground(gray);
+		tipo_prod.setForeground(black);
+		tipo_prod.addFocusListener(this);
+		agregarCot.add(tipo_prod);
 
 		prod = new JLabel("Producto");
-		prod.setBounds(57, 243, 77, 25);
+		prod.setBounds(57, 219, 77, 25);
 		prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		prod.setForeground(black);
 		agregarCot.add(prod);
 
 		prod_com = new JComboBox<>();
 		prod_com.addItem("Cristal");
-		prod_com.setBounds(163, 241, 248, 30);
+		prod_com.setBounds(163, 216, 300, 30);
         prod_com.setFont(new Font("Microsoft New Tai Lue", 0, 18));
         prod_com.setBackground(gray);
 		prod_com.setForeground(black);
 		prod_com.addFocusListener(this);
 		agregarCot.add(prod_com);
+
+		id_prod = new JLabel("Id Producto");
+		id_prod.setBounds(490, 219, 128, 25);
+		id_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		id_prod.setForeground(black);
+		agregarCot.add(id_prod);
+
+		id_prod_txt = new JTextField();
+		id_prod_txt.setText("");
+		id_prod_txt.setBounds(623, 216, 50, 30);
+		id_prod_txt.setBackground(white);
+		id_prod_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		id_prod_txt.setForeground(black);
+		id_prod_txt.setHorizontalAlignment(JTextField.CENTER);
+		id_prod_txt.setEditable(false);
+		agregarCot.add(id_prod_txt);
 		
 		pre_uni = new JLabel("Precio unitario");
-		pre_uni.setBounds(438, 243, 124, 25);
+		pre_uni.setBounds(57, 288, 124, 25);
 		pre_uni.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		pre_uni.setForeground(black);
 		agregarCot.add(pre_uni);
 
 		pre_uni_txt = new JTextField();
 		pre_uni_txt.setText("0");
-		pre_uni_txt.setBounds(581, 241, 159, 30);
+		pre_uni_txt.setBounds(188, 285, 120, 30);
 		pre_uni_txt.setBackground(white);
 		pre_uni_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		pre_uni_txt.setForeground(black);
 		pre_uni_txt.setEditable(false);
 		agregarCot.add(pre_uni_txt);
 
+		diseno = new JLabel("Dise\u00F1o");
+		diseno.setBounds(345, 288, 60, 25);
+		diseno.setFont(new Font ("Microsoft New Tai Lue", 0, 18));
+		diseno.setForeground(black);
+		agregarCot.add(diseno);
+
+		diseno_txt = new JTextField();
+		diseno_txt.setBounds(432, 285, 133, 30);
+		diseno_txt.setBackground(gray);
+		diseno_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		diseno_txt.setForeground(black);
+		diseno_txt.addFocusListener(this);
+		agregarCot.add(diseno_txt);
+
 		dim = new JLabel("Dimensiones");
-		dim.setBounds(57, 310, 113, 25);
+		dim.setBounds(57, 357, 113, 25); //288
 		dim.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dim.setForeground(black);
 		agregarCot.add(dim);
 
 		dim_largo = new JTextField();
-		dim_largo.setBounds(188, 308, 107, 30);
+		dim_largo.setBounds(182, 354, 107, 30);
 		dim_largo.setBackground(gray);
 		dim_largo.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dim_largo.setForeground(black);
@@ -385,42 +465,27 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarCot.add(dim_largo);
 
 		x = new JLabel("X");
-		x.setBounds(308, 310, 11, 25);
+		x.setBounds(316, 357, 11, 25);
 		x.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		x.setForeground(black);
 		agregarCot.add(x);
 
 		dim_ancho = new JTextField();
-		dim_ancho.setBounds(332, 308, 107, 30);
+		dim_ancho.setBounds(354, 354, 107, 30);
 		dim_ancho.setBackground(gray);
 		dim_ancho.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dim_ancho.setForeground(black);
 		dim_ancho.addFocusListener(this);
 		agregarCot.add(dim_ancho);
 
-		tipo = new JLabel("Tipo");
-		tipo.setBounds(462, 310, 37, 25);
-		tipo.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		tipo.setForeground(black);
-		agregarCot.add(tipo);
-
-		tipo_prod = new JComboBox<>();
-		tipo_prod.addItem("Barandal");
-		tipo_prod.setBounds(517, 308, 223, 30);
-        tipo_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-        tipo_prod.setBackground(gray);
-		tipo_prod.setForeground(black);
-		tipo_prod.addFocusListener(this);
-		agregarCot.add(tipo_prod);
-
 		cant = new JLabel("Cantidad");
-		cant.setBounds(58, 378, 76, 25);
+		cant.setBounds(58, 423, 76, 25);
 		cant.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		cant.setForeground(black);
 		agregarCot.add(cant);
 
 		cant_txt = new JTextField();
-		cant_txt.setBounds(153, 376, 90, 30);
+		cant_txt.setBounds(153, 420, 90, 30);
 		cant_txt.setBackground(white);
 		cant_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		cant_txt.setForeground(black);
@@ -431,26 +496,26 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 		ImageIcon mas_imagen = new ImageIcon("./images/mas.png");
 		mas = new JLabel(mas_imagen);
-		mas.setBounds(306, 376, 30, 30);
+		mas.setBounds(306, 420, 30, 30);
 		mas.addMouseListener(this);
 		mas.addFocusListener(this);
 		agregarCot.add(mas);
 
 		ImageIcon menos_imagen = new ImageIcon("./images/menos.png");
 		menos = new JLabel(menos_imagen);
-		menos.setBounds(258, 376, 30, 30);
+		menos.setBounds(258, 420, 30, 30);
 		menos.addMouseListener(this);
 		menos.addFocusListener(this);
 		agregarCot.add(menos);
 
 		sbtotal = new JLabel("Subtotal");
-		sbtotal.setBounds(370, 378, 70, 25);
+		sbtotal.setBounds(370, 423, 70, 25);
 		sbtotal.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbtotal.setForeground(black);
 		agregarCot.add(sbtotal);
 
 		sbtotal_txt = new JTextField();
-		sbtotal_txt.setBounds(462, 376, 133, 30);
+		sbtotal_txt.setBounds(462, 420, 133, 30);
 		sbtotal_txt.setBackground(white);
 		sbtotal_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbtotal_txt.setForeground(black);
@@ -602,6 +667,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.dim_ancho.setBackground(bluefocus);
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(bluefocus);
+		} else if (evt.getSource() == this.diseno_txt) {
+			this.diseno_txt.setBackground(bluefocus);
+		} else if (evt.getSource() == this.anti_txt) {
+			this.anti_txt.setBackground(bluefocus);
 		} else if (evt.getSource() == this.cancelar) {
 			this.cancelar.setBackground(bluefocus);
 			this.cancelar.setForeground(black);
@@ -643,6 +712,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.dim_ancho.setBackground(gray);
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(gray);
+		} else if (evt.getSource() == this.diseno_txt) {
+			this.diseno_txt.setBackground(gray);
+		} else if (evt.getSource() == this.anti_txt) {
+			this.anti_txt.setBackground(gray);
 		} else if (evt.getSource() == this.cancelar) {
 			this.cancelar.setBackground(blue);
 			this.cancelar.setForeground(white);
