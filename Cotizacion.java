@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.Calendar;
 import javax.swing.table.*;
 
-public class Cotizacion extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
+public class Cotizacion extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener, ItemListener {
 
 	private Color blue = new Color(0, 153, 153);
     private Color blue2 = new Color(2, 199, 199);
@@ -32,7 +32,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private JScrollPane scroll;
 	private JPanel agregarCot, mostrarCot;
 	private JComboBox<String> prod_com, tipo_prod;
-	private char cop = 169;
+	private String tipoProducto, nomProducto, precioUnitario, idProducto;
+	private Double subtotalCot;
+	private Double totalCot = 0.0;
 
 	public Cotizacion(String title) {
 		this.setLayout(null);;
@@ -70,6 +72,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		try {
 			db.conectar();
 			st = db.getConexion().createStatement();
+
 			rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
 			rs.next();
 			id = rs.getInt(1); //maxima id de cotizaciones + 1
@@ -212,17 +215,16 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		tabla.setFont(new Font("Microsoft New Tai Lue", 0, 14));
 		mostrarCot.add(scroll);
 
-		modelo.addRow(new String[]{"1", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-		modelo.addRow(new String[]{"2", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
+		//modelo.addRow(new String[]{"1", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
 		
-		sbt = new JLabel("Subtotal:");
-		sbt.setBounds(103, 422, 80, 25);
+		sbt = new JLabel("Subtotal: \u0024");
+		sbt.setBounds(103, 422, 100, 25);
 		sbt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbt.setForeground(black);
 		mostrarCot.add(sbt);
 
 		sbt_txt = new JTextField();
-		sbt_txt.setText("");
+		sbt_txt.setText("0");
 		sbt_txt.setBounds(200, 419, 150, 30);
 		sbt_txt.setBackground(white);
 		sbt_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
@@ -231,14 +233,14 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		sbt_txt.setEditable(false);
 		mostrarCot.add(sbt_txt);
 
-		iva = new JLabel("IVA:");
+		iva = new JLabel("IVA: \u0025");
 		iva.setBounds(103, 457, 80, 25);
 		iva.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		iva.setForeground(black);
 		mostrarCot.add(iva);
 
 		iva_txt = new JTextField();
-		iva_txt.setText("");
+		iva_txt.setText("16");
 		iva_txt.setBounds(200, 454, 150, 30);
 		iva_txt.setBackground(white);
 		iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
@@ -247,14 +249,14 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		iva_txt.setEditable(false);
 		mostrarCot.add(iva_txt);
 		
-		total = new JLabel("Total:");
+		total = new JLabel("Total: \u0024");
 		total.setBounds(103, 492, 80, 25);
 		total.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		total.setForeground(black);
 		mostrarCot.add(total);
 
 		tot_txt = new JTextField();
-		tot_txt.setText("");
+		tot_txt.setText("0");
 		tot_txt.setBounds(200, 489, 150, 30);
 		tot_txt.setBackground(white);
 		tot_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
@@ -263,15 +265,15 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		tot_txt.setEditable(false);
 		mostrarCot.add(tot_txt);
 
-		anti = new JLabel("Anticipo:");
-		anti.setBounds(455, 422, 100, 25);
+		anti = new JLabel("Anticipo: \u0024");
+		anti.setBounds(455, 422, 110, 25);
 		anti.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		anti.setForeground(black);
 		mostrarCot.add(anti);
 
 		anti_txt = new JTextField();
 		anti_txt.setText("");
-		anti_txt.setBounds(552, 419, 150, 30);
+		anti_txt.setBounds(565, 419, 150, 30);
 		anti_txt.setBackground(gray);
 		anti_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
 		anti_txt.setForeground(blue);
@@ -279,15 +281,15 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		anti_txt.addFocusListener(this);
 		mostrarCot.add(anti_txt);
 
-		pend = new JLabel("Pendiente:");
-		pend.setBounds(455, 457, 100, 25);
+		pend = new JLabel("Pendiente: \u0024");
+		pend.setBounds(455, 457, 110, 25);
 		pend.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		pend.setForeground(black);
 		mostrarCot.add(pend);
 
 		pend_txt = new JTextField();
 		pend_txt.setText("");
-		pend_txt.setBounds(552, 454, 150, 30);
+		pend_txt.setBounds(565, 454, 150, 30);
 		pend_txt.setBackground(white);
 		pend_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
 		pend_txt.setForeground(blue);
@@ -335,7 +337,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		guardar.addMouseListener(this);
 		mostrarCot.add(guardar);
 
-		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
+		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. \u00A9 Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
 		rights.setBounds(0, 591, 810, 30);
 		rights.setFont(new Font("Microsoft New Tai Lue", 2, 12));
 		rights.setOpaque(true);
@@ -375,36 +377,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		fechaLabel.setForeground(black);
 		agregarCot.add(fechaLabel);
 
-		tipo = new JLabel("Tipo");
-		tipo.setBounds(57, 150, 45, 25);
-		tipo.setFont(new Font("Microsoft New Tai Lue", 1, 18));
-		tipo.setForeground(black);
-		agregarCot.add(tipo);
-
-		tipo_prod = new JComboBox<>();
-		tipo_prod.addItem("Barandal");
-		tipo_prod.setBounds(120, 147, 223, 30);
-        tipo_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-        tipo_prod.setBackground(gray);
-		tipo_prod.setForeground(black);
-		tipo_prod.addFocusListener(this);
-		agregarCot.add(tipo_prod);
-
-		prod = new JLabel("Producto");
-		prod.setBounds(57, 219, 77, 25);
-		prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		prod.setForeground(black);
-		agregarCot.add(prod);
-
-		prod_com = new JComboBox<>();
-		prod_com.addItem("Cristal");
-		prod_com.setBounds(163, 216, 300, 30);
-        prod_com.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-        prod_com.setBackground(gray);
-		prod_com.setForeground(black);
-		prod_com.addFocusListener(this);
-		agregarCot.add(prod_com);
-
 		id_prod = new JLabel("Id Producto");
 		id_prod.setBounds(490, 219, 128, 25);
 		id_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
@@ -435,6 +407,76 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		pre_uni_txt.setForeground(black);
 		pre_uni_txt.setEditable(false);
 		agregarCot.add(pre_uni_txt);
+
+		tipo = new JLabel("Tipo");
+		tipo.setBounds(57, 150, 45, 25);
+		tipo.setFont(new Font("Microsoft New Tai Lue", 1, 18));
+		tipo.setForeground(black);
+		agregarCot.add(tipo);
+
+		tipo_prod = new JComboBox<>();
+		tipo_prod.setBounds(120, 147, 223, 30);
+        tipo_prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+        tipo_prod.setBackground(gray);
+		tipo_prod.setForeground(black);
+		tipo_prod.addFocusListener(this);
+
+		try {
+			rs = st.executeQuery("SELECT DISTINCT(tipo_prod) FROM Producto");
+			while(rs.next()) {
+				tipo_prod.addItem(rs.getString(1));
+			}
+		} catch(SQLException err) {
+			JOptionPane.showMessageDialog(null, err);
+		}
+
+		tipo_prod.addItemListener(this);
+		agregarCot.add(tipo_prod);
+
+		prod = new JLabel("Producto");
+		prod.setBounds(57, 219, 77, 25);
+		prod.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		prod.setForeground(black);
+		agregarCot.add(prod);
+
+		prod_com = new JComboBox<>();
+		prod_com.setBounds(163, 216, 300, 30);
+        prod_com.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+        prod_com.setBackground(gray);
+		prod_com.setForeground(black);
+		prod_com.addFocusListener(this);
+
+		tipoProducto = tipo_prod.getSelectedItem().toString();
+
+		try {
+			rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
+			while(rs.next()) {
+				prod_com.addItem(rs.getString("nom_prod"));
+			}
+		} catch(SQLException err) {
+			JOptionPane.showMessageDialog(null, err);
+		}
+
+		nomProducto = prod_com.getSelectedItem().toString();
+
+		try {
+			rs = st.executeQuery("SELECT prec_prod, id_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
+			rs.next();
+			precioUnitario = rs.getString("prec_prod");
+			pre_uni_txt.setEditable(true);
+			pre_uni_txt.setText(precioUnitario);
+			pre_uni_txt.setEditable(false);
+
+			idProducto = rs.getString("id_prod");
+			id_prod_txt.setEditable(true);
+			id_prod_txt.setText(idProducto);
+			id_prod_txt.setEditable(false);
+		} catch(SQLException err) {
+			JOptionPane.showMessageDialog(null, err);
+		}
+
+		prod_com.addItemListener(this);
+		agregarCot.add(prod_com);
 
 		diseno = new JLabel("Dise\u00F1o");
 		diseno.setBounds(345, 288, 60, 25);
@@ -543,7 +585,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarcot.addMouseListener(this);
 		agregarCot.add(agregarcot);
 
-		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
+		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. \u00A9 Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
 		rights.setBounds(0, 591, 810, 30);
 		rights.setFont(new Font("Microsoft New Tai Lue", 2, 12));
 		rights.setOpaque(true);
@@ -594,8 +636,74 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} else if(evt.getSource() == this.regresar) {
 			mostrarCot.setVisible(true);
 			agregarCot.setVisible(false);
-		} else if(evt.getSource() == this.agregarcot) {
-			String id_cotizacion = no_cotField.getText();
+		} else if(evt.getSource() == this.agregarcot){
+			//datos producto
+			nomProducto = prod_com.getSelectedItem().toString();
+			String disProducto = diseno_txt.getText();
+			String largoProducto = dim_largo.getText();
+			String anchoProducto = dim_ancho.getText();
+			String cantidadProducto = cant_txt.getText();
+			String sbtProducto = sbtotal_txt.getText();
+
+			//Comprobamos si estan todos los datos
+			if(disProducto.isEmpty() || largoProducto.isEmpty() || anchoProducto.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.");
+			} else if(cantidadProducto.equals("0")) {
+				JOptionPane.showMessageDialog(null, "Debe agregar al menos un producto.");
+			} else {
+				//validamos dimensiones
+				try {
+					Double largo, ancho;
+					largo = Double.parseDouble(dim_largo.getText());
+					ancho = Double.parseDouble(dim_ancho.getText());
+					try {
+						rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
+						rs.next();
+
+						idProducto = rs.getString("id_prod");
+						id_prod_txt.setEditable(true);
+						id_prod_txt.setText(idProducto);
+						id_prod_txt.setEditable(false);
+
+						precioUnitario = rs.getString("prec_prod");
+						pre_uni_txt.setEditable(true);
+						pre_uni_txt.setText(precioUnitario);
+						pre_uni_txt.setEditable(false);
+
+						modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, precioUnitario, disProducto, 
+													largoProducto, anchoProducto, cantidadProducto, sbtProducto});
+						
+						subtotalCot = 0.0;
+						Double valor;
+						for (int i = 0; i < tabla.getRowCount(); i++) {
+							try {
+								valor = Double.parseDouble(tabla.getValueAt(i, 8).toString());
+								subtotalCot += valor;
+							} catch(NumberFormatException err) {
+								System.out.println(err);
+							}
+						}
+
+						sbt_txt.setEditable(true);
+						sbt_txt.setText(subtotalCot.toString());
+						sbt_txt.setEditable(false);
+
+						Double ivaSbt = subtotalCot * 0.16;
+						totalCot = subtotalCot + ivaSbt;
+
+						tot_txt.setEditable(true);
+						tot_txt.setText(totalCot.toString());
+						tot_txt.setEditable(false);
+					} catch(SQLException err) {
+						JOptionPane.showMessageDialog(null, err);
+					}
+				} catch(NumberFormatException err) {
+					JOptionPane.showMessageDialog(null, "Solamente debe ingresar numeros.");
+					System.out.println(err);
+				}
+			} 
+		} else if(evt.getSource() == this.guardar) {
+			/*String id_cotizacion = no_cotField.getText();
 			try {
 				int id_carrito;
 				String id_producto;
@@ -613,8 +721,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					"', '" + cant_txt.getText() + "', '" + sbtotal_txt.getText() + "')");
 			} catch(SQLException err) {
 				JOptionPane.showMessageDialog(null, err);
-			}
-		}
+			} */
+		} 
 	}
 
 	//teclado
@@ -822,8 +930,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.cant_txt.setEditable(false);
 		}
 		this.sbtotal_txt.setEditable(true);
-		Integer precio = Integer.parseInt(this.cant_txt.getText()) * 100;
-		this.sbtotal_txt.setText(precio.toString());
+		Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario);
+		this.sbtotal_txt.setText(String.valueOf(precio));
 		this.sbtotal_txt.setEditable(false);
 	}
 	
@@ -867,4 +975,51 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	public void windowOpened(WindowEvent evt) {
 		
 	}
+
+	//itemListener
+	@Override
+	public void itemStateChanged(ItemEvent evt) {
+		if (evt.getSource() == this.tipo_prod) {
+	   		if(evt.getStateChange() == 1) {
+				tipoProducto = tipo_prod.getSelectedItem().toString();
+				prod_com.removeAllItems();
+				try {
+					rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
+					while(rs.next()) {
+						prod_com.addItem(rs.getString("nom_prod"));
+					}
+				} catch(SQLException err) {
+				JOptionPane.showMessageDialog(null, err);
+				}
+       	  	}
+       	} else if(evt.getSource() == this.prod_com) {
+			if(evt.getStateChange() == 1) {
+				nomProducto = prod_com.getSelectedItem().toString();
+				try {
+					rs = st.executeQuery("SELECT prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
+					rs.next();
+					precioUnitario = rs.getString("prec_prod");
+					this.sbtotal_txt.setEditable(true);
+					Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario);
+					this.sbtotal_txt.setText(String.valueOf(precio));
+					this.sbtotal_txt.setEditable(false);
+
+					rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
+					rs.next();
+
+					idProducto = rs.getString("id_prod");
+					id_prod_txt.setEditable(true);
+					id_prod_txt.setText(idProducto);
+					id_prod_txt.setEditable(false);
+
+					precioUnitario = rs.getString("prec_prod");
+					pre_uni_txt.setEditable(true);
+					pre_uni_txt.setText(precioUnitario);
+					pre_uni_txt.setEditable(false);
+				} catch(SQLException err) {
+					JOptionPane.showMessageDialog(null, err);
+				}
+			}
+       	}
+    }
 }
