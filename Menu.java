@@ -154,7 +154,11 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
             c1.setVisible(true);
             this.setVisible(false);
-		} 
+		} else if (evt.getSource() == employee) {  //Código temporar para calar factura
+            Factura f1 = new Factura("Factura");
+            f1.setVisible(true);
+            this.setVisible(false);
+        }
     }
     
     //Teclado
@@ -174,6 +178,10 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             if(evt.getSource() == sale) {
                 Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
                 c1.setVisible(true);
+                this.setVisible(false);
+            } else if (evt.getSource() == employee) {  //Código temporar para calar factura
+                Factura f1 = new Factura("Factura");
+                f1.setVisible(true);
                 this.setVisible(false);
             }
         }
