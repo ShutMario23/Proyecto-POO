@@ -462,7 +462,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		try {
 			rs = st.executeQuery("SELECT prec_prod, id_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
 			rs.next();
-
 			precioUnitario = rs.getString("prec_prod");
 			pre_uni_txt.setEditable(true);
 			pre_uni_txt.setText(precioUnitario);
@@ -619,10 +618,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
         agregarCot.add(tira4);
 	}
 
-	//ActionListener
+	//botones
 	@Override
 	public void actionPerformed(ActionEvent evt) {
-		if(evt.getSource() == this.cancelar) { //Boton cancelar
+		if(evt.getSource() == this.cancelar) {
 			Menu m = new Menu("Men\u00FA");
 			m.setVisible(true);
 			this.setVisible(false);
@@ -631,10 +630,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			} catch(SQLException err) {
 				JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
 			}
-		} else if(evt.getSource() == this.agregar) { 
+		} else if(evt.getSource() == this.agregar) {
 			mostrarCot.setVisible(false);
 			agregarCot.setVisible(true);
-		} else if(evt.getSource() == this.regresar) { 
+		} else if(evt.getSource() == this.regresar) {
 			mostrarCot.setVisible(true);
 			agregarCot.setVisible(false);
 		} else if(evt.getSource() == this.agregarcot){
@@ -646,13 +645,13 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			String cantidadProducto = cant_txt.getText();
 			String sbtProducto = sbtotal_txt.getText();
 
-			//Comprobamos si el usuario no dejo campos vacios
+			//Comprobamos si estan todos los datos
 			if(disProducto.isEmpty() || largoProducto.isEmpty() || anchoProducto.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.");
 			} else if(cantidadProducto.equals("0")) {
 				JOptionPane.showMessageDialog(null, "Debe agregar al menos un producto.");
 			} else {
-				//validamos las dimensiones
+				//validamos dimensiones
 				try {
 					Double largo, ancho;
 					largo = Double.parseDouble(dim_largo.getText());
@@ -674,9 +673,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 						modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, precioUnitario, disProducto, 
 													largoProducto, anchoProducto, cantidadProducto, sbtProducto});
 						
-						Double subtotalCot = 0.0;
+						subtotalCot = 0.0;
 						Double valor;
-
 						for (int i = 0; i < tabla.getRowCount(); i++) {
 							try {
 								valor = Double.parseDouble(tabla.getValueAt(i, 8).toString());
@@ -700,7 +698,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 						JOptionPane.showMessageDialog(null, err);
 					}
 				} catch(NumberFormatException err) {
-					JOptionPane.showMessageDialog(null, "Solamente debe ingresar n\u00FAmeros.");
+					JOptionPane.showMessageDialog(null, "Solamente debe ingresar numeros.");
 					System.out.println(err);
 				}
 			} 
@@ -727,7 +725,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} 
 	}
 
-	//KeyListener
+	//teclado
 	@Override
 	public void keyTyped(KeyEvent evt) {
        /* if(evt.getSource() == this.no_cotField) {
@@ -756,7 +754,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		}
 	}
 
-	//FocusListener
+	//Focus
 	@Override
     public void focusGained(FocusEvent evt) {
 		if(evt.getSource() == this.id_cliente_txt) {
@@ -847,7 +845,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		}
 	}
 
-	//MouseListener
+	//mouse
 	@Override
     public void mouseReleased(MouseEvent evt) {
 
@@ -937,7 +935,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		this.sbtotal_txt.setEditable(false);
 	}
 	
-	//WindowListener
+	//ventana
 	@Override
 	public void windowClosing(WindowEvent evt) {
 		try {
@@ -978,7 +976,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		
 	}
 
-	//ItemListener
+	//itemListener
 	@Override
 	public void itemStateChanged(ItemEvent evt) {
 		if (evt.getSource() == this.tipo_prod) {
@@ -991,34 +989,33 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 						prod_com.addItem(rs.getString("nom_prod"));
 					}
 				} catch(SQLException err) {
-					JOptionPane.showMessageDialog(null, err);
+				JOptionPane.showMessageDialog(null, err);
 				}
        	  	}
        	} else if(evt.getSource() == this.prod_com) {
 			if(evt.getStateChange() == 1) {
 				nomProducto = prod_com.getSelectedItem().toString();
 				try {
-					// Se consulta la id y precio del producto seleccionado
-					rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
+					rs = st.executeQuery("SELECT prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
 					rs.next();
-					
-					// Id del producto
-					this.idProducto = rs.getString("id_prod");
-					id_prod_txt.setEditable(true);
-					id_prod_txt.setText(this.idProducto);
-					id_prod_txt.setEditable(false);
-					
-					// Precio unitario del producto
-					this.precioUnitario = rs.getString("prec_prod");
-					pre_uni_txt.setEditable(true);
-					pre_uni_txt.setText(this.precioUnitario);
-					pre_uni_txt.setEditable(false);
-					
-					// Sacamos el subtotal del producto acorde a la cantidad solicitada
+					precioUnitario = rs.getString("prec_prod");
 					this.sbtotal_txt.setEditable(true);
 					Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario);
 					this.sbtotal_txt.setText(String.valueOf(precio));
 					this.sbtotal_txt.setEditable(false);
+
+					rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
+					rs.next();
+
+					idProducto = rs.getString("id_prod");
+					id_prod_txt.setEditable(true);
+					id_prod_txt.setText(idProducto);
+					id_prod_txt.setEditable(false);
+
+					precioUnitario = rs.getString("prec_prod");
+					pre_uni_txt.setEditable(true);
+					pre_uni_txt.setText(precioUnitario);
+					pre_uni_txt.setEditable(false);
 				} catch(SQLException err) {
 					JOptionPane.showMessageDialog(null, err);
 				}
