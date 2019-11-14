@@ -17,10 +17,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private Color gray = new Color(224, 224, 224);
 	private JLabel tira, tira2, tira3, tira4, rights;
 	private JButton cancelar, agregar, guardar, borrar, agregarcot, regresar;
-	private JLabel no_cot, fechaLabel, sbt, total, iva, anti, pend, id_cliente, nom_cliente, tel, dir, corr;
+	private JLabel no_cot, fechaLabel, sbt, total, iva, tot_txt, iva_txt, sbt_txt, anti, pend, id_cliente, nom_cliente, tel, dir, corr;
 	private JLabel prod, pre_uni, dim, x, cant, sbtotal, mas, menos, tipo, id_prod, diseno;
 	private JTextField no_cotField, pre_uni_txt, dim_largo, dim_ancho, cant_txt, sbtotal_txt, id_prod_txt, diseno_txt;
-	private JTextField id_cliente_txt, nom_cliente_txt, tel_txt, dir_txt, corr_txt, tot_txt, iva_txt, sbt_txt, anti_txt, pend_txt;
+	private JTextField id_cliente_txt, nom_cliente_txt, tel_txt, dir_txt, corr_txt, anti_txt, pend_txt;
 	private Conexion db;
 	private Statement st;
 	private ResultSet rs;
@@ -33,8 +33,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private JPanel agregarCot, mostrarCot;
 	private JComboBox<String> prod_com, tipo_prod;
 	private String tipoProducto, nomProducto, precioUnitario, idProducto;
-	private Double subtotalCot;
-	private Double totalCot = 0.0;
+	private Double totalCot = 0.00;
 
 	public Cotizacion(String title) {
 		this.setLayout(null);;
@@ -195,7 +194,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
         tabla.getTableHeader().setReorderingAllowed(false);
         tabla.getTableHeader().setResizingAllowed(false);
         scroll = new JScrollPane(tabla);
-		scroll.setBounds(30, 225, 750, 180);
+		scroll.setBounds(30, 225, 745, 180);
 		tabla.getColumnModel().getColumn(0).setPreferredWidth(25); //Id
 		tabla.getColumnModel().getColumn(1).setPreferredWidth(140); //Nombre
 		tabla.getColumnModel().getColumn(2).setPreferredWidth(70); //Tipo
@@ -217,62 +216,49 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 		//modelo.addRow(new String[]{"1", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
 		
-		sbt = new JLabel("Subtotal: \u0024");
+		sbt = new JLabel("Subtotal: ");
 		sbt.setBounds(103, 422, 100, 25);
 		sbt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		sbt.setForeground(black);
 		mostrarCot.add(sbt);
 
-		sbt_txt = new JTextField();
-		sbt_txt.setText("0");
-		sbt_txt.setBounds(200, 419, 150, 30);
-		sbt_txt.setBackground(white);
+		sbt_txt = new JLabel("0", SwingConstants.CENTER);
+		sbt_txt.setBounds(200, 422, 150, 25);
 		sbt_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
 		sbt_txt.setForeground(blue);
-		sbt_txt.setHorizontalAlignment(JTextField.CENTER);
-		sbt_txt.setEditable(false);
 		mostrarCot.add(sbt_txt);
 
-		iva = new JLabel("IVA: \u0025");
+		iva = new JLabel("IVA 16 \u0025:");
 		iva.setBounds(103, 457, 80, 25);
 		iva.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		iva.setForeground(black);
 		mostrarCot.add(iva);
 
-		iva_txt = new JTextField();
-		iva_txt.setText("16");
-		iva_txt.setBounds(200, 454, 150, 30);
-		iva_txt.setBackground(white);
+		iva_txt = new JLabel("0", SwingConstants.CENTER);
+		iva_txt.setBounds(200, 457, 150, 25);
 		iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
 		iva_txt.setForeground(blue);
-		iva_txt.setHorizontalAlignment(JTextField.CENTER);
-		iva_txt.setEditable(false);
 		mostrarCot.add(iva_txt);
 		
-		total = new JLabel("Total: \u0024");
+		total = new JLabel("Total: ");
 		total.setBounds(103, 492, 80, 25);
 		total.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		total.setForeground(black);
 		mostrarCot.add(total);
 
-		tot_txt = new JTextField();
-		tot_txt.setText("0");
-		tot_txt.setBounds(200, 489, 150, 30);
-		tot_txt.setBackground(white);
+		tot_txt = new JLabel("0", SwingConstants.CENTER);
+		tot_txt.setBounds(200, 492, 150, 25);
 		tot_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
 		tot_txt.setForeground(blue);
-		tot_txt.setHorizontalAlignment(JTextField.CENTER);
-		tot_txt.setEditable(false);
 		mostrarCot.add(tot_txt);
 
-		anti = new JLabel("Anticipo: \u0024");
+		anti = new JLabel("Anticipo: ");
 		anti.setBounds(455, 422, 110, 25);
 		anti.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		anti.setForeground(black);
 		mostrarCot.add(anti);
 
-		anti_txt = new JTextField();
-		anti_txt.setText("");
+		anti_txt = new JTextField("0");
 		anti_txt.setBounds(565, 419, 150, 30);
 		anti_txt.setBackground(gray);
 		anti_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
@@ -281,14 +267,13 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		anti_txt.addFocusListener(this);
 		mostrarCot.add(anti_txt);
 
-		pend = new JLabel("Pendiente: \u0024");
+		pend = new JLabel("Pendiente: ");
 		pend.setBounds(455, 457, 110, 25);
 		pend.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		pend.setForeground(black);
 		mostrarCot.add(pend);
 
-		pend_txt = new JTextField();
-		pend_txt.setText("");
+		pend_txt = new JTextField("");
 		pend_txt.setBounds(565, 454, 150, 30);
 		pend_txt.setBackground(white);
 		pend_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
@@ -499,11 +484,12 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		dim.setForeground(black);
 		agregarCot.add(dim);
 
-		dim_largo = new JTextField();
+		dim_largo = new JTextField("0");
 		dim_largo.setBounds(182, 354, 107, 30);
 		dim_largo.setBackground(gray);
 		dim_largo.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dim_largo.setForeground(black);
+		dim_largo.setHorizontalAlignment(JTextField.CENTER);
 		dim_largo.addFocusListener(this);
 		agregarCot.add(dim_largo);
 
@@ -513,11 +499,12 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		x.setForeground(black);
 		agregarCot.add(x);
 
-		dim_ancho = new JTextField();
+		dim_ancho = new JTextField("0");
 		dim_ancho.setBounds(354, 354, 107, 30);
 		dim_ancho.setBackground(gray);
 		dim_ancho.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		dim_ancho.setForeground(black);
+		dim_ancho.setHorizontalAlignment(JTextField.CENTER);
 		dim_ancho.addFocusListener(this);
 		agregarCot.add(dim_ancho);
 
@@ -532,7 +519,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		cant_txt.setBackground(white);
 		cant_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		cant_txt.setForeground(black);
-		cant_txt.setText("0");
+		cant_txt.setText("1");
 		cant_txt.setHorizontalAlignment(JTextField.CENTER);
 		cant_txt.setEditable(false);
 		agregarCot.add(cant_txt);
@@ -654,7 +641,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			} else {
 				//validamos las dimensiones
 				try {
-					Double largo, ancho;
+					Double largo = 0.0, ancho = 0.0;
 					largo = Double.parseDouble(dim_largo.getText());
 					ancho = Double.parseDouble(dim_ancho.getText());
 					try {
@@ -674,7 +661,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 						modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, precioUnitario, disProducto, 
 													largoProducto, anchoProducto, cantidadProducto, sbtProducto});
 						
-						Double subtotalCot = 0.0;
+						Double subtotalCot = 0.00;
 						Double valor;
 
 						for (int i = 0; i < tabla.getRowCount(); i++) {
@@ -686,16 +673,14 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 							}
 						}
 
-						sbt_txt.setEditable(true);
 						sbt_txt.setText(subtotalCot.toString());
-						sbt_txt.setEditable(false);
 
 						Double ivaSbt = subtotalCot * 0.16;
 						totalCot = subtotalCot + ivaSbt;
 
-						tot_txt.setEditable(true);
 						tot_txt.setText(totalCot.toString());
-						tot_txt.setEditable(false);
+						iva_txt.setText(ivaSbt.toString());
+
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
 					}
@@ -705,6 +690,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 				}
 			} 
 		} else if(evt.getSource() == this.guardar) {
+			Recibo r1 = new Recibo("Recibo");
+			r1.setVisible(true);
+			this.setVisible(false);
 			/*String id_cotizacion = no_cotField.getText();
 			try {
 				int id_carrito;
@@ -773,14 +761,17 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.prod_com.setBackground(bluefocus);
 		} else if (evt.getSource() == this.dim_largo) {
 			this.dim_largo.setBackground(bluefocus);
+			dim_largo.setText("");
 		} else if (evt.getSource() == this.dim_ancho) {
 			this.dim_ancho.setBackground(bluefocus);
+			dim_ancho.setText("");
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(bluefocus);
 		} else if (evt.getSource() == this.diseno_txt) {
 			this.diseno_txt.setBackground(bluefocus);
 		} else if (evt.getSource() == this.anti_txt) {
 			this.anti_txt.setBackground(bluefocus);
+			anti_txt.setText("");
 		} else if (evt.getSource() == this.cancelar) {
 			this.cancelar.setBackground(bluefocus);
 			this.cancelar.setForeground(black);
@@ -818,14 +809,35 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.prod_com.setBackground(gray);
 		} else if (evt.getSource() == this.dim_largo) {
 			this.dim_largo.setBackground(gray);
+			this.sbtotal_txt.setEditable(true);
+			Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
+			this.sbtotal_txt.setText(String.valueOf(precio));
+			this.sbtotal_txt.setEditable(false);
 		} else if (evt.getSource() == this.dim_ancho) {
 			this.dim_ancho.setBackground(gray);
+			this.sbtotal_txt.setEditable(true);
+			Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
+			this.sbtotal_txt.setText(String.valueOf(precio));
+			this.sbtotal_txt.setEditable(false);
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(gray);
 		} else if (evt.getSource() == this.diseno_txt) {
 			this.diseno_txt.setBackground(gray);
 		} else if (evt.getSource() == this.anti_txt) {
 			this.anti_txt.setBackground(gray);
+			if (Double.parseDouble(this.anti_txt.getText()) < 0)  {
+				JOptionPane.showMessageDialog(null, "No se puede dar un anticipo negativo", "Error", JOptionPane.ERROR_MESSAGE);
+				anti_txt.setText("");
+				pend_txt.setText("");
+			} else if (Double.parseDouble(this.anti_txt.getText()) > Double.parseDouble(this.tot_txt.getText())){
+				JOptionPane.showMessageDialog(null, "No se puede dar un anticipo mayor al total", "Error", JOptionPane.ERROR_MESSAGE);
+				anti_txt.setText("");
+				pend_txt.setText("");
+			} else {
+				Double pago = Double.parseDouble(this.tot_txt.getText()) - Double.parseDouble(this.anti_txt.getText());
+				this.pend_txt.setText(String.valueOf(pago));
+				this.pend_txt.setEditable(false);
+			}
 		} else if (evt.getSource() == this.cancelar) {
 			this.cancelar.setBackground(blue);
 			this.cancelar.setForeground(white);
@@ -932,7 +944,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.cant_txt.setEditable(false);
 		}
 		this.sbtotal_txt.setEditable(true);
-		Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario);
+		Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
 		this.sbtotal_txt.setText(String.valueOf(precio));
 		this.sbtotal_txt.setEditable(false);
 	}
@@ -1016,7 +1028,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					
 					// Sacamos el subtotal del producto acorde a la cantidad solicitada
 					this.sbtotal_txt.setEditable(true);
-					Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario);
+					Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
 					this.sbtotal_txt.setText(String.valueOf(precio));
 					this.sbtotal_txt.setEditable(false);
 				} catch(SQLException err) {

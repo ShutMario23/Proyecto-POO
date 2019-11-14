@@ -24,7 +24,6 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 	private String patchEmpresa = "images/San-Roman-Logo.png";
 	private String patchOk = "images/ok.png";
 	private ImageIcon ok = new ImageIcon(patchOk);
-	private char cop = 169;
 	private CustomFont cf = new CustomFont();
 	private Conexion db;
 	private Statement st;
@@ -84,8 +83,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		passwordField.addFocusListener(this);
 		add(passwordField);
 
-		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + 
-			" Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
+		rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. \u00A9 Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
 		rights.setBounds(0, 441, 630, 30);
 		rights.setFont(new Font("Microsoft New Tai Lue", 2, 12));
 		rights.setOpaque(true);

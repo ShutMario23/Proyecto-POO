@@ -5,9 +5,7 @@ public class CustomFont {
     private static Font font = null;
 
     public CustomFont(){
-        //String fontName = "font/universaljack.ttf";
         String fontName = "font/MagmaWave Caps.otf";
-        // String fontName = "font/deltaray.ttf";
 
         try {
             InputStream is = getClass().getResourceAsStream(fontName);

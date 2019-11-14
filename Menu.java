@@ -26,7 +26,6 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
     private ImageIcon saleImg = new ImageIcon(patchSale);
     private ImageIcon providerImg = new ImageIcon(patchProvider);
     private ImageIcon employeeImg = new ImageIcon(patchEmployee);
-    private char cop = 169;
 
     public Menu (String title) {
         this.setLayout(null);
@@ -114,7 +113,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         employeeLabel.setForeground(blue);
         add(employeeLabel);
 
-        rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. " + cop + " Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
+        rights = new JLabel("Cristaler\u00eda San Rom\u00e1n. \u00A9 Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
 		rights.setBounds(0, 591, 810, 30);
 		rights.setFont(new Font("Microsoft New Tai Lue", 2, 12));
 		rights.setOpaque(true);
@@ -178,10 +177,6 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             if(evt.getSource() == sale) {
                 Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
                 c1.setVisible(true);
-                this.setVisible(false);
-            } else if (evt.getSource() == employee) {  //Código temporar para calar factura
-                Factura f1 = new Factura("Factura");
-                f1.setVisible(true);
                 this.setVisible(false);
             }
         }

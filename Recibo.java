@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.Calendar;
 import javax.swing.table.*;
 
-public class Factura extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
+public class Recibo extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
 
     private Color blue = new Color(0, 153, 153);
     private Color blue2 = new Color(2, 199, 199);
@@ -17,12 +17,12 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
-    private JLabel logo, nom_dueno, RFC_dueno, id_fac, fechaLabel, nom_cliente, dir, tel, corr, head_tabla, sbt, iva, total, sbt_txt, iva_txt, total_txt;
+    private JLabel logo, nom_dueno, RFC_dueno, id_rec, fechaLabel, nom_cliente, dir, tel, corr, head_tabla, sbt, iva, total, sbt_txt, iva_txt, total_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
-    private JButton salir, guardar;
+    private JButton salir, guardar, factura;
     
-    public Factura (String title) {
+    public Recibo (String title) {
         this.setLayout(null);
         this.setResizable(false);
         this.setBounds(0, 0, 561, 726); //X27
@@ -56,11 +56,11 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         RFC_dueno.setForeground(black);
         add(RFC_dueno);
 
-        id_fac = new JLabel("Id Factura:     34");
-        id_fac.setBounds(410, 30, 100, 15);
-        id_fac.setFont(new Font("Microsoft New Tai Lue", 1, 11));
-        id_fac.setForeground(black);
-        add(id_fac);
+        id_rec = new JLabel("Id Factura:     34");
+        id_rec.setBounds(410, 30, 100, 15);
+        id_rec.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+        id_rec.setForeground(black);
+        add(id_rec);
 
         fechaLabel = new JLabel("Fecha:     " + dia + "/" + mes + "/" + anio);
 		fechaLabel.setBounds(410, 45, 152, 15);
@@ -207,7 +207,7 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         add(total_txt);
 
         salir = new JButton("Salir");
-        salir.setBounds(127, 630, 90, 25);
+        salir.setBounds(72, 630, 90, 25);
         salir.setFont(new Font("Microsoft New Tai Lue", 1, 14));
         salir.setBackground(blue);
         salir.setForeground(white);
@@ -217,14 +217,24 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         add(salir);
 
         guardar = new JButton("Guardar");
-        guardar.setBounds(344, 630, 90, 25);
+        guardar.setBounds(232, 630, 90, 25);
         guardar.setFont(new Font("Microsoft New Tai Lue", 1, 14));
         guardar.setBackground(blue);
         guardar.setForeground(white);
         guardar.addActionListener(this);
         guardar.addFocusListener(this);
         guardar.addMouseListener(this);
-        add(guardar);        
+        add(guardar);     
+        
+        factura = new JButton("Factura");
+        factura.setBounds(394, 630, 90, 25);
+        factura.setFont(new Font("Microsoft New Tai Lue", 1, 14));
+        factura.setBackground(blue);
+        factura.setForeground(white);
+        factura.addActionListener(this);
+        factura.addFocusListener(this);
+        factura.addMouseListener(this);
+        add(factura);  
     }
 
     //Botones
@@ -233,6 +243,10 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         if (evt.getSource() == salir){
             Menu menu = new Menu("Men\u00FA");
             menu.setVisible(true);
+            this.setVisible(false);
+        } else if (evt.getSource() == factura){
+            Factura f1 = new Factura("Factura");
+            f1.setVisible(true);
             this.setVisible(false);
         }
     }
@@ -255,6 +269,10 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
                 Menu menu = new Menu("Men\u00FA");
                 menu.setVisible(true);
                 this.setVisible(false);
+            } else if (evt.getSource() == factura){
+                Factura f1 = new Factura("Factura");
+                f1.setVisible(true);
+                this.setVisible(false);
             }
         }
 	}
@@ -268,6 +286,9 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         } else if (evt.getSource() == this.guardar){
             this.guardar.setBackground(bluefocus);
             this.guardar.setForeground(black);
+        } else if (evt.getSource() == this.factura){
+            this.factura.setBackground(bluefocus);
+            this.factura.setForeground(black);
         }
     }
 
@@ -279,6 +300,9 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         } else if (evt.getSource() == this.guardar){
             this.guardar.setBackground(blue);
             this.guardar.setForeground(white);
+        } else if (evt.getSource() == this. factura){
+            this.factura.setBackground(blue);
+            this.factura.setForeground(white);
         }
 	}
 
@@ -301,6 +325,9 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         } else if (evt.getSource() == this.guardar){
             this.guardar.setBackground(blue);
             this.guardar.setForeground(white);
+        } else if (evt.getSource() == this. factura){
+            this.factura.setBackground(blue);
+            this.factura.setForeground(white);
         }
     }
 
@@ -310,12 +337,17 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         this.salir.setForeground(white);
         this.guardar.setBackground(blue);
         this.guardar.setForeground(white);
+        this.factura.setBackground(blue);
+        this.factura.setForeground(white);
         if(evt.getSource() == this.salir){
             this.salir.setBackground(bluefocus);
             this.salir.setForeground(black);
         } else if (evt.getSource() == this.guardar){
             this.guardar.setBackground(bluefocus);
             this.guardar.setForeground(black);
+        } else if (evt.getSource() == this.factura){
+            this.factura.setBackground(bluefocus);
+            this.factura.setForeground(black);
         }
     }
 
