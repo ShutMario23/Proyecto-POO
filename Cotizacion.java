@@ -696,22 +696,28 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			String dirCliente = dir_txt.getText();
 			String corrCliente = corr_txt.getText();
 			String antiCliente = anti_txt.getText();
+			String idEmpleado = "1";
 			if(idCliente.isEmpty() || nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Se deben llenar todos los campos.");
 			} else {
 
 				try {
 					double anticipo = Double.parseDouble(antiCliente);
-					if(anticipo < 0.0) {
-						JOptionPane.showMessageDialog("Solo se admiten cantidades positivas.");
-					} else {
-						/*try {
-							st.executeUpdate("INSERT INTO Cotizacion () VALUES ()");
+					if(!(anticipo < 0.0)) {
+						try {
+							//Se agrega el cliente a la db
+							String camposCliente = "'" +idCliente +  "', '" + idEmpleado + "', '" + nomCliente + 
+							"', '" + telCliente + "', '" + dirCliente + "', '" + corrCliente + "'";
+							st.executeUpdate("INSERT INTO Cliente (id_cl, id_emp, nom_cl, tel_cl, dir_cl, corr_cl)" + 
+							" VALUES (" + camposCliente + ")");
+
+							//Se agrega la cotizacion a la db
+							
+
+							//Se agrega el carrito a la db
 						} catch(SQLException err) {
-							JOptionPane.showMessageDialog(null, "Error al realizar la consulta.");
-						}*/
-
-
+							JOptionPane.showMessageDialog(null, err.toString());
+						}
 						// Pasamos a mostrar el recibo
 						Recibo r1 = new Recibo("Recibo");
 						r1.setVisible(true);
