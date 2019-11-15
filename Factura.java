@@ -11,7 +11,7 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
     private Color blue2 = new Color(2, 199, 199);
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
-    private Color bluefocus = new Color(167, 255, 255);
+    private Color bluefocus = new Color(167, 255, 255); 
 	private Color white = new Color(255, 255, 255);
 	private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
