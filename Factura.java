@@ -17,7 +17,7 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
-    private JLabel logo, nom_dueno, RFC_dueno, id_fac, fechaLabel, nom_cliente, dir, tel, corr, head_tabla, sbt, iva, total, sbt_txt, iva_txt, total_txt;
+    private JLabel logo, nom_dueno, RFC_dueno, dir_em, tel_em, id_fac, fechaLabel, nom_cliente, dir, tel, corr, head_tabla, sbt, iva, total, sbt_txt, iva_txt, total_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar;
@@ -45,18 +45,30 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         this.add(logo);
 
         nom_dueno = new JLabel("<html><body>LIC. JULIA DE LA CRUZ SAN ROM\u00C1N</body></html>");
-        nom_dueno.setBounds(195, 40, 150, 32);
+        nom_dueno.setBounds(195, 30, 150, 30);
         nom_dueno.setFont(new Font("Microsoft New Tai Lue", 1, 11 ));
         nom_dueno.setForeground(black);
         add(nom_dueno);
 
         RFC_dueno = new JLabel("<html><body><b>RFC: </b>FCTAM234JU54N12</body></html>");
-        RFC_dueno.setBounds(195, 71, 150, 25);
+        RFC_dueno.setBounds(195, 60, 150, 15);
         RFC_dueno.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         RFC_dueno.setForeground(black);
         add(RFC_dueno);
 
-        id_fac = new JLabel("Id Factura:     34");
+        dir_em = new JLabel("<html><body>San Feipe No. 2599 Col.San Jorge Monterrey, N.L.</body></html>");
+        dir_em.setBounds(195, 83, 300, 15);
+        dir_em.setFont(new Font("Microsoft New Tai Lue", 1, 11 ));
+        dir_em.setForeground(blue);
+        add(dir_em);
+
+        tel_em = new JLabel("<html><body><b>Tels: </b>818 708-4664, 83-11-2331</body></html>");
+        tel_em.setBounds(195, 98, 180, 15);
+        tel_em.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        tel_em.setForeground(black);
+        add(tel_em);
+
+        id_fac = new JLabel("Id Factura: 0");
         id_fac.setBounds(410, 30, 100, 15);
         id_fac.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         id_fac.setForeground(black);
@@ -171,38 +183,38 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
         posy = rowcount + 206;
 
         sbt = new JLabel("Subtotal: ");
-        sbt.setBounds(380, posy + 25, 80, 15);
+        sbt.setBounds(380, posy + 25, 60, 15);
         sbt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         sbt.setForeground(black);
         add(sbt);
 
-        sbt_txt = new JLabel("0");
-        sbt_txt.setBounds(450, posy + 25, 60, 15);
+        sbt_txt = new JLabel("0", SwingConstants.RIGHT);
+        sbt_txt.setBounds(450, posy + 25, 50, 15);
         sbt_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         sbt_txt.setForeground(black);
         add(sbt_txt);
 
         iva = new JLabel("IVA 16 \u0025: ");
-        iva.setBounds(380, posy + 44, 80, 15);
+        iva.setBounds(380, posy + 44, 60, 15);
         iva.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         iva.setForeground(black);
         add(iva);
 
-        iva_txt = new JLabel("200");
-        iva_txt.setBounds(450, posy + 44, 60, 15);
+        iva_txt = new JLabel("0", SwingConstants.RIGHT);
+        iva_txt.setBounds(450, posy + 44, 50, 15);
         iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         iva.setForeground(black);
         add(iva_txt);
 
         total = new JLabel("Total: ");
-        total.setBounds(380, posy + 62, 80, 15);
+        total.setBounds(380, posy + 62, 60, 15);
         total.setFont(new Font("Microsoft New Tai Lue", 1,11));
         total.setForeground(black);
         add(total);
 
-        total_txt = new JLabel("2000");
-        total_txt.setBounds(450, posy + 62, 60, 15);
-        total_txt.setFont(new Font("Microsostf New Tai Lue", 1, 11));
+        total_txt = new JLabel("0", SwingConstants.RIGHT);
+        total_txt.setBounds(450, posy + 62, 50, 15);
+        total_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         total_txt.setForeground(black);
         add(total_txt);
 
