@@ -8,10 +8,10 @@ import javax.swing.table.*;
 public class Cotizacion extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener, ItemListener {
 
 	private Color blue = new Color(0, 153, 153);
-    private Color blue2 = new Color(2, 199, 199);
-    private Color blue3= new Color(0, 220, 220);
-    private Color blue4 = new Color(0, 243, 243);
-    private Color bluefocus = new Color(167, 255, 255);
+  private Color blue2 = new Color(2, 199, 199);
+  private Color blue3= new Color(0, 220, 220);
+  private Color blue4 = new Color(0, 243, 243);
+  private Color bluefocus = new Color(167, 255, 255);
 	private Color white = new Color(255, 255, 255);
 	private Color black = new Color(0, 0, 0);
 	private Color gray = new Color(224, 224, 224);
@@ -24,7 +24,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private Conexion db;
 	private Statement st;
 	private ResultSet rs;
-	private Integer id;
+	private Integer id, idCliente;
 	private Calendar fecha;
 	private String dia, mes, anio;
 	private DefaultTableModel modelo;
@@ -52,7 +52,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarCot.setBounds(0, 0, 810, 650);
 		agregarCot.setLayout(null);
 		agregarCot.setVisible(false);
-		
+
 		//Panel para mostrar detalles de cotizacion
 		mostrarCot = new JPanel();
 		mostrarCot.setBackground(white);
@@ -71,14 +71,16 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		try {
 			db.conectar();
 			st = db.getConexion().createStatement();
-
 			rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
 			rs.next();
-			id = rs.getInt(1); //maxima id de cotizaciones + 1
+			id = rs.getInt(1) + 1; //maxima id de cotizaciones + 1
+			rs = st.executeQuery("SELECT MAX(id_cl) FROM Cliente");
+			rs.next();
+			idCliente = rs.getInt(1) + 1; //maxima id de clientes + 1
 		} catch(SQLException err) {
 			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
 		}
-		
+
 		panelMostrarCot();
 		panelAgregarCot();
 
@@ -97,8 +99,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		no_cotField.setBounds(159, 54, 50, 30);
 		no_cotField.setBackground(white);
 		no_cotField.setFont(new Font("Microsoft New Tai Lue", 1, 18));
-		no_cotField.setText(Integer.valueOf(id).toString());
-		no_cotField.setHorizontalAlignment(JTextField.CENTER); 
+		no_cotField.setText(id.toString());
+		no_cotField.setHorizontalAlignment(JTextField.CENTER);
 		no_cotField.setEditable(false);
 		no_cotField.setForeground(blue);
 		mostrarCot.add(no_cotField);
@@ -118,6 +120,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		id_cliente_txt = new JTextField();
 		id_cliente_txt.setBounds(159, 95, 50, 30);
 		id_cliente_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+		id_cliente_txt.setText(idCliente.toString());
+		id_cliente_txt.setHorizontalAlignment(JTextField.CENTER);
+		id_cliente_txt.setEditable(false);
 		id_cliente_txt.setBackground(gray);
 		id_cliente_txt.setForeground(black);
 		id_cliente_txt.addFocusListener(this);
@@ -179,20 +184,21 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		corr_txt.addFocusListener(this);
 		mostrarCot.add(corr_txt);
 
-		String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho", 
+		String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho",
 									   "Cantidad", "Precio total"};
 
 		modelo = new DefaultTableModel(null, campos);
-        tabla = new JTable(modelo) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-            //all cells false
-            return false;
-            }
-        };
-        tabla.getTableHeader().setReorderingAllowed(false);
-        tabla.getTableHeader().setResizingAllowed(false);
-        scroll = new JScrollPane(tabla);
+    tabla = new JTable(modelo) {
+    	@Override
+      public boolean isCellEditable(int row, int column) {
+        //all cells false
+        return false;
+      }
+    };
+
+    tabla.getTableHeader().setReorderingAllowed(false);
+    tabla.getTableHeader().setResizingAllowed(false);
+    scroll = new JScrollPane(tabla);
 		scroll.setBounds(30, 225, 745, 180);
 		tabla.getColumnModel().getColumn(0).setPreferredWidth(25); //Id
 		tabla.getColumnModel().getColumn(1).setPreferredWidth(140); //Nombre
@@ -205,16 +211,14 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		tabla.getColumnModel().getColumn(8).setPreferredWidth(95); //Precio total
 		tabla.setRowHeight(25);
 		tabla.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16)); 
-		tabla.getTableHeader().setForeground(white); 
-		tabla.getTableHeader().setBackground(blue); 
+		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16));
+		tabla.getTableHeader().setForeground(white);
+		tabla.getTableHeader().setBackground(blue);
 		tabla.setBackground(white);
 		tabla.setForeground(black);
 		tabla.setFont(new Font("Microsoft New Tai Lue", 0, 14));
 		mostrarCot.add(scroll);
 
-		//modelo.addRow(new String[]{"1", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-		
 		sbt = new JLabel("Subtotal: ");
 		sbt.setBounds(103, 422, 100, 25);
 		sbt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
@@ -238,7 +242,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 18));
 		iva_txt.setForeground(blue);
 		mostrarCot.add(iva_txt);
-		
+
 		total = new JLabel("Total: ");
 		total.setBounds(103, 492, 80, 25);
 		total.setFont(new Font("Microsoft New Tai Lue", 0, 18));
@@ -328,7 +332,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		rights.setBackground(black);
 		rights.setForeground(white);
         mostrarCot.add(rights);
-        
+
         tira = new JLabel();
         tira.setBounds(0,0,810,20);
         tira.setBackground(blue);
@@ -376,7 +380,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		id_prod_txt.setHorizontalAlignment(JTextField.CENTER);
 		id_prod_txt.setEditable(false);
 		agregarCot.add(id_prod_txt);
-		
+
 		pre_uni = new JLabel("Precio unitario");
 		pre_uni.setBounds(57, 288, 124, 25);
 		pre_uni.setFont(new Font("Microsoft New Tai Lue", 0, 18));
@@ -519,7 +523,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		cant_txt.setBackground(white);
 		cant_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		cant_txt.setForeground(black);
-		cant_txt.setText("1");	
+		cant_txt.setText("1");
 		cant_txt.setHorizontalAlignment(JTextField.CENTER);
 		cant_txt.setEditable(false);
 		agregarCot.add(cant_txt);
@@ -582,7 +586,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		rights.setBackground(black);
 		rights.setForeground(white);
         agregarCot.add(rights);
-        
+
         tira = new JLabel();
         tira.setBounds(0,0,810,20);
         tira.setBackground(blue);
@@ -620,10 +624,10 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			} catch(SQLException err) {
 				JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
 			}
-		} else if(evt.getSource() == this.agregar) { 
+		} else if(evt.getSource() == this.agregar) {
 			mostrarCot.setVisible(false);
 			agregarCot.setVisible(true);
-		} else if(evt.getSource() == this.regresar) { 
+		} else if(evt.getSource() == this.regresar) {
 			mostrarCot.setVisible(true);
 			agregarCot.setVisible(false);
 		} else if(evt.getSource() == this.agregarcot){
@@ -660,9 +664,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 						pre_uni_txt.setText(precioUnitario);
 						pre_uni_txt.setEditable(false);
 
-						modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, precioUnitario, disProducto, 
+						modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, precioUnitario, disProducto,
 													largoProducto, anchoProducto, cantidadProducto, sbtProducto});
-						
+
 						Double subtotalCot = 0.00;
 						Double valor;
 
@@ -690,16 +694,15 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					JOptionPane.showMessageDialog(null, "Solamente debe ingresar n\u00FAmeros.");
 					System.out.println(err);
 				}
-			} 
+			}
 		} else if(evt.getSource() == this.guardar) {
-			String idCliente = id_cliente_txt.getText();
 			String nomCliente = nom_cliente_txt.getText();
 			String telCliente = tel_txt.getText();
 			String dirCliente = dir_txt.getText();
 			String corrCliente = corr_txt.getText();
 			String antiCliente = anti_txt.getText();
-			String idEmpleado = "1";
-			if(idCliente.isEmpty() || nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty()) {
+			String idEmpleado = "";
+			if(nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty()) {
 				JOptionPane.showMessageDialog(null, "Se deben llenar todos los campos.");
 			} else {
 
@@ -707,30 +710,69 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					double anticipo = Double.parseDouble(antiCliente);
 					if(!(anticipo < 0.0)) {
 						try {
+							//Obtenemos al empleado que hizo la cotizacion.
+							String usuario = "";
+							rs = st.executeQuery("SELECT id_emp, sesion_act FROM Usuario");
+							while(rs.next()) {
+								if(rs.getString("sesion_act").equals("s")) {
+									idEmpleado = rs.getString("id_emp");
+									break;
+								}
+							}
+
 							//Se agrega el cliente a la db
-							String camposCliente = "'" +idCliente +  "', '" + idEmpleado + "', '" + nomCliente + 
+							String camposCliente = "'" + idCliente.toString() +  "', '" + idEmpleado + "', '" + nomCliente +
 							"', '" + telCliente + "', '" + dirCliente + "', '" + corrCliente + "'";
-							st.executeUpdate("INSERT INTO Cliente (id_cl, id_emp, nom_cl, tel_cl, dir_cl, corr_cl)" + 
+							st.executeUpdate("INSERT INTO Cliente (id_cl, id_emp, nom_cl, tel_cl, dir_cl, corr_cl)" +
 							" VALUES (" + camposCliente + ")");
 
 							//Se agrega la cotizacion a la db
-							
+							String camposCotizacion = "'" + no_cotField.getText() + "', '" + idCliente.toString() +  "', '" + idEmpleado + "', '" +
+							sbt_txt.getText() + "', '" + iva_txt.getText() + "', '" + tot_txt.getText() + "', '" + anti_txt.getText() +
+							"', '" + pend_txt.getText() + "'";
+							st.executeUpdate("INSERT INTO Cotizacion (id_cot, id_cl, id_emp, sub_cot, iva_cot, tot_cot, ant_cot, pend_cot)" +
+							" VALUES (" + camposCotizacion + ")");
 
 							//Se agrega el carrito a la db
+							rs = st.executeQuery("SELECT MAX(id_carrito) FROM Carrito");
+							rs.next();
+							Integer idCarrito = rs.getInt(1) + 1;
+							String idProd = "";
+							String disProd = "";
+							String larProd = "";
+							String anchProd = "";
+							String canProd = "";
+							String sbtProd = "";
+							for (int row = 0; row < tabla.getRowCount(); row++){ //Recorremos la tabla para obtener los datos
+        				DefaultTableModel model = (DefaultTableModel) tabla.getModel();
+        				idProd = model.getValueAt(row, 0).toString();
+								disProd = model.getValueAt(row, 4).toString();
+								larProd = model.getValueAt(row, 5).toString();
+								anchProd = model.getValueAt(row, 6).toString();
+								canProd = model.getValueAt(row, 7).toString();
+								sbtProd = model.getValueAt(row, 8).toString();
+								String camposCarrito = "'" + idCarrito.toString() + "', '" + idProd + "', '" + no_cotField.getText() +  "', '" +
+								anchProd + "', '" + larProd + "', '" + disProd + "', '" + canProd + "', '" + sbtProd + "'";
+								st.executeUpdate("INSERT INTO Carrito (id_carrito, id_prod, id_cot, ancho_prod, largo_prod, dis_prod, cant_prod, subt_prod)" +
+								" VALUES (" + camposCarrito + ")");
+								idCarrito++;
+							}
+
+							// Pasamos a mostrar el recibo
+							db.desconectar();
+							this.setVisible(false);
+							Recibo r1 = new Recibo("Recibo");
+							r1.setVisible(true);
 						} catch(SQLException err) {
 							JOptionPane.showMessageDialog(null, err.toString());
 						}
-						// Pasamos a mostrar el recibo
-						Recibo r1 = new Recibo("Recibo");
-						r1.setVisible(true);
-						this.setVisible(false);
 					}
 				} catch(NumberFormatException err) {
 					JOptionPane.showMessageDialog(null, "El anticipo debe tomar valores enteros.");
 					System.out.println(err);
 				}
 			}
-		} 
+		}
 	}
 
 	//KeyListener
@@ -745,20 +787,20 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 	@Override
 	public void keyReleased(KeyEvent evt) {
-        
+
     }
 
 	@Override
 	public void keyPressed(KeyEvent evt) {
 		if (evt.getKeyCode() == 10){
-			if(evt.getSource() == this.agregar) { 
+			if(evt.getSource() == this.agregar) {
 				mostrarCot.setVisible(false);
 				agregarCot.setVisible(true);
-			} else if(evt.getSource() == this.regresar) { 
+			} else if(evt.getSource() == this.regresar) {
 				mostrarCot.setVisible(true);
 				agregarCot.setVisible(false);
 			}
-		}	
+		}
 	}
 
 	//FocusListener
@@ -825,35 +867,47 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} else if (evt.getSource() == this.prod_com) {
 			this.prod_com.setBackground(gray);
 		} else if (evt.getSource() == this.dim_largo) {
-			this.dim_largo.setBackground(gray);
-			this.sbtotal_txt.setEditable(true);
-			Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
-			this.sbtotal_txt.setText(String.valueOf(precio));
-			this.sbtotal_txt.setEditable(false);
+			try {
+				this.dim_largo.setBackground(gray);
+				this.sbtotal_txt.setEditable(true);
+				Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
+				this.sbtotal_txt.setText(String.valueOf(precio));
+				this.sbtotal_txt.setEditable(false);
+			} catch(NumberFormatException err) {
+				System.out.println(err);
+			}
 		} else if (evt.getSource() == this.dim_ancho) {
-			this.dim_ancho.setBackground(gray);
-			this.sbtotal_txt.setEditable(true);
-			Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
-			this.sbtotal_txt.setText(String.valueOf(precio));
-			this.sbtotal_txt.setEditable(false);
+			try {
+				this.dim_ancho.setBackground(gray);
+				this.sbtotal_txt.setEditable(true);
+				Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());
+				this.sbtotal_txt.setText(String.valueOf(precio));
+				this.sbtotal_txt.setEditable(false);
+			} catch(NumberFormatException err) {
+				System.out.println(err);
+			}
 		} else if (evt.getSource() == this.tipo_prod) {
 			this.tipo_prod.setBackground(gray);
 		} else if (evt.getSource() == this.diseno_txt) {
 			this.diseno_txt.setBackground(gray);
 		} else if (evt.getSource() == this.anti_txt) {
-			this.anti_txt.setBackground(gray);
-			if (Double.parseDouble(this.anti_txt.getText()) < 0)  {
-				JOptionPane.showMessageDialog(null, "No se puede dar un anticipo negativo", "Error", JOptionPane.ERROR_MESSAGE);
-				anti_txt.setText("");
-				pend_txt.setText("");
-			} else if (Double.parseDouble(this.anti_txt.getText()) > Double.parseDouble(this.tot_txt.getText())){
-				JOptionPane.showMessageDialog(null, "No se puede dar un anticipo mayor al total", "Error", JOptionPane.ERROR_MESSAGE);
-				anti_txt.setText("");
-				pend_txt.setText("");
-			} else {
-				Double pago = Double.parseDouble(this.tot_txt.getText()) - Double.parseDouble(this.anti_txt.getText());
-				this.pend_txt.setText(String.valueOf(pago));
-				this.pend_txt.setEditable(false);
+			try {
+				this.anti_txt.setBackground(gray);
+				if (Double.parseDouble(this.anti_txt.getText()) < 0)  {
+					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo negativo", "Error", JOptionPane.ERROR_MESSAGE);
+					anti_txt.setText("");
+					pend_txt.setText("");
+				} else if (Double.parseDouble(this.anti_txt.getText()) > Double.parseDouble(this.tot_txt.getText())){
+					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo mayor al total", "Error", JOptionPane.ERROR_MESSAGE);
+					anti_txt.setText("");
+					pend_txt.setText("");
+				} else {
+					Double pago = Double.parseDouble(this.tot_txt.getText()) - Double.parseDouble(this.anti_txt.getText());
+					this.pend_txt.setText(String.valueOf(pago));
+					this.pend_txt.setEditable(false);
+				}
+			} catch(NumberFormatException err) {
+				System.out.println(err);
 			}
 		} else if (evt.getSource() == this.cancelar) {
 			this.cancelar.setBackground(blue);
@@ -965,13 +1019,22 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		this.sbtotal_txt.setText(String.valueOf(precio));
 		this.sbtotal_txt.setEditable(false);
 	}
-	
+
 	//WindowListener
 	@Override
 	public void windowClosing(WindowEvent evt) {
 		try {
+			//Actualizamos el estado de sesion de usuario en la db
+			String usuario = "";
+			rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+			while(rs.next()) {
+				if(rs.getString("sesion_act").equals("s")) {
+					usuario = rs.getString("nom_usu");
+					st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+				}
+			}
 			db.desconectar();
-			System.out.println("Se ha desconectado de la base de datos.");
+			System.out.println("Se ha desconectado el usuario: " + usuario);
 		} catch (SQLException err) {
 			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -984,27 +1047,27 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 	@Override
 	public void windowActivated(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowClosed(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent evt) {
-		
+
 	}
 
 	//ItemListener
@@ -1030,19 +1093,19 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					// Se consulta la id y precio del producto seleccionado
 					rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
 					rs.next();
-					
+
 					// Id del producto
 					this.idProducto = rs.getString("id_prod");
 					id_prod_txt.setEditable(true);
 					id_prod_txt.setText(this.idProducto);
 					id_prod_txt.setEditable(false);
-					
+
 					// Precio unitario del producto
 					this.precioUnitario = rs.getString("prec_prod");
 					pre_uni_txt.setEditable(true);
 					pre_uni_txt.setText(this.precioUnitario);
 					pre_uni_txt.setEditable(false);
-					
+
 					// Sacamos el subtotal del producto acorde a la cantidad solicitada
 					this.sbtotal_txt.setEditable(true);
 					Double precio = Double.parseDouble(this.cant_txt.getText()) * Double.parseDouble(this.precioUnitario) * Double.parseDouble(dim_largo.getText()) * Double.parseDouble(dim_ancho.getText());

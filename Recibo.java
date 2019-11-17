@@ -12,17 +12,20 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	private Color white = new Color(255, 255, 255);
-	private Color black = new Color(0, 0, 0);
+	  private Color white = new Color(255, 255, 255);
+	  private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
-    private JLabel logo, dir_em, tel_em, id_rec, fechaLabel, atendido, nom_cliente, dir, tel, corr, head_tabla; 
+    private JLabel logo, dir_em, tel_em, id_rec, fechaLabel, atendido, nom_cliente, dir, tel, corr, head_tabla;
     private JLabel sbt, iva, total, sbt_txt, iva_txt, total_txt, anti, anti_txt, pend, pend_txt, firma, linea_f, firma_c, linea_c;
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar, factura;
-    
+    private Conexion db;
+  	private Statement st;
+  	private ResultSet rs;
+
     public Recibo (String title) {
         this.setLayout(null);
         this.setResizable(false);
@@ -34,12 +37,21 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         this.setIconImage(new ImageIcon(getClass().getResource("images/Logo.png")).getImage());
         this.addWindowListener(this);
 
+        //Iniciamos la conexion a la db
+    		db = new Conexion();
+    		try {
+    			db.conectar();
+          st = db.getConexion().createStatement();
+    		} catch (SQLException e) {
+    			JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    		}
+
         //obtenemos fecha actual
-		fecha = Calendar.getInstance();
-		dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-		anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
-        
+    		fecha = Calendar.getInstance();
+    		dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+    		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+    		anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
         logo.setBounds(30, 20, 150, 89);
@@ -64,9 +76,9 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(id_rec);
 
         fechaLabel = new JLabel("Fecha:     " + dia + "/" + mes + "/" + anio);
-		fechaLabel.setBounds(410, 45, 152, 15);
-		fechaLabel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
-		fechaLabel.setForeground(black);
+    		fechaLabel.setBounds(410, 45, 152, 15);
+    		fechaLabel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+    		fechaLabel.setForeground(black);
         add(fechaLabel);
 
         atendido = new JLabel("<html><b>Atendido Por: </b></html>");
@@ -85,8 +97,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         tel.setBounds(350, 133, 100, 15);
         tel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         tel.setForeground(black);
-        add(tel); 
-        
+        add(tel);
+
         dir = new JLabel("<html><b>Direcci\u00F3n: </b></html>");
         dir.setBounds(30, 151, 500, 15);
         dir.setFont(new Font("Microsoft New Tai Lue", 0, 11));
@@ -105,7 +117,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         head_tabla.setForeground(black);
         add(head_tabla);
 
-        String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho", 
+        String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho",
             "Cantidad", "Precio total"};
 
         modelo = new DefaultTableModel(null, campos);
@@ -236,7 +248,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 		pend_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
 		pend_txt.setForeground(black);
         add(pend_txt);
-        
+
         firma_c = new JLabel("FIRMA DEL CLIENTE", SwingConstants.CENTER);
         firma_c.setBounds(87, 615, 150, 15);
         firma_c.setFont(new Font("Microsoft New Tai Lue", 1, 11));
@@ -279,8 +291,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         guardar.addActionListener(this);
         guardar.addFocusListener(this);
         guardar.addMouseListener(this);
-        add(guardar);     
-        
+        add(guardar);
+
         factura = new JButton("Factura");
         factura.setBounds(394, 650, 90, 25);
         factura.setFont(new Font("Microsoft New Tai Lue", 1, 14));
@@ -289,7 +301,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         factura.addActionListener(this);
         factura.addFocusListener(this);
         factura.addMouseListener(this);
-        add(factura);  
+        add(factura);
     }
 
     //Botones
@@ -384,12 +396,26 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     public void mouseClicked(MouseEvent evt) {
 
 	}
-	
-	//ventana
-	@Override
-	public void windowClosing(WindowEvent evt) {
-		
-	}
+
+  //WindowListener
+  @Override
+  public void windowClosing(WindowEvent evt) {
+    try {
+      //Actualizamos el estado de sesion de usuario en la db
+      String usuario = "";
+      rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+      while(rs.next()) {
+        if(rs.getString("sesion_act").equals("s")) {
+          usuario = rs.getString("nom_usu");
+          st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+        }
+      }
+      db.desconectar();
+      System.out.println("Se ha desconectado el usuario: " + usuario);
+    } catch (SQLException err) {
+      JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+  }
 
 	@Override
 	public void windowDeactivated(WindowEvent evt) {
@@ -398,27 +424,27 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
 	@Override
 	public void windowActivated(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowClosed(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent evt) {
-		
+
 	}
 
 

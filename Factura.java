@@ -11,9 +11,9 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     private Color blue2 = new Color(2, 199, 199);
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
-    private Color bluefocus = new Color(167, 255, 255); 
-	private Color white = new Color(255, 255, 255);
-	private Color black = new Color(0, 0, 0);
+    private Color bluefocus = new Color(167, 255, 255);
+	  private Color white = new Color(255, 255, 255);
+	  private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
@@ -21,7 +21,10 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar;
-    
+    private Conexion db;
+  	private Statement st;
+  	private ResultSet rs;
+
     public Factura (String title) {
         this.setLayout(null);
         this.setResizable(false);
@@ -33,12 +36,21 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         this.setIconImage(new ImageIcon(getClass().getResource("images/Logo.png")).getImage());
         this.addWindowListener(this);
 
+        //Iniciamos la conexion a la db
+    		db = new Conexion();
+    		try {
+    			db.conectar();
+          st = db.getConexion().createStatement();
+    		} catch (SQLException e) {
+    			JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    		}
+
         //obtenemos fecha actual
-		fecha = Calendar.getInstance();
-		dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-		anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
-        
+    		fecha = Calendar.getInstance();
+    		dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+    		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+    		anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
         logo.setBounds(30, 20, 150, 89);
@@ -90,8 +102,8 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         tel.setBounds(350, 130, 100, 15);
         tel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         tel.setForeground(black);
-        add(tel); 
-        
+        add(tel);
+
         dir = new JLabel("<html><b>Direcci\u00F3n: </b></html>");
         dir.setBounds(30, 148, 500, 15);
         dir.setFont(new Font("Microsoft New Tai Lue", 0, 11));
@@ -110,7 +122,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         head_tabla.setForeground(black);
         add(head_tabla);
 
-        String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho", 
+        String[] campos = new String[]{"Id", "Nombre", "Tipo", "P. Unitario", "Dise\u00F1o", "Largo", "Ancho",
             "Cantidad", "Precio total"};
 
         modelo = new DefaultTableModel(null, campos);
@@ -236,7 +248,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         guardar.addActionListener(this);
         guardar.addFocusListener(this);
         guardar.addMouseListener(this);
-        add(guardar);        
+        add(guardar);
     }
 
     //Botones
@@ -313,12 +325,26 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     public void mouseClicked(MouseEvent evt) {
 
 	}
-	
-	//ventana
-	@Override
-	public void windowClosing(WindowEvent evt) {
-		
-	}
+
+  //WindowListener
+  @Override
+  public void windowClosing(WindowEvent evt) {
+    try {
+      //Actualizamos el estado de sesion de usuario en la db
+      String usuario = "";
+      rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+      while(rs.next()) {
+        if(rs.getString("sesion_act").equals("s")) {
+          usuario = rs.getString("nom_usu");
+          st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+        }
+      }
+      db.desconectar();
+      System.out.println("Se ha desconectado el usuario: " + usuario);
+    } catch (SQLException err) {
+      JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+  }
 
 	@Override
 	public void windowDeactivated(WindowEvent evt) {
@@ -327,27 +353,27 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
 
 	@Override
 	public void windowActivated(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowClosed(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent evt) {
-		
+
 	}
 
 

@@ -1,19 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 
 //Update
 
-public class Menu extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener {
+public class Menu extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
 
     private Color blue = new Color(0, 153, 153);
     private Color blue2 = new Color(2,199,199);
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	private Color white = new Color(255, 255, 255);
-	private Color black = new Color(0, 0, 0);
-	private Color gray = new Color(224, 224, 224);
+	  private Color white = new Color(255, 255, 255);
+	  private Color black = new Color(0, 0, 0);
+	  private Color gray = new Color(224, 224, 224);
     private JButton product, sale, provider, employee;
     private String patchLogo = "images/Logo.png";
     private String patchProduct = "images/product.png";
@@ -26,6 +27,9 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
     private ImageIcon saleImg = new ImageIcon(patchSale);
     private ImageIcon providerImg = new ImageIcon(patchProvider);
     private ImageIcon employeeImg = new ImageIcon(patchEmployee);
+    private Conexion db;
+  	private Statement st;
+  	private ResultSet rs;
 
     public Menu (String title) {
         this.setLayout(null);
@@ -36,6 +40,16 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setBackground(white);
         this.setIconImage(new ImageIcon(getClass().getResource(patchLogo)).getImage());
+        this.addWindowListener(this);
+
+        //iniciamos conexion a la db
+    		db = new Conexion();
+    		try {
+    			db.conectar();
+    			st = db.getConexion().createStatement();
+    		} catch(SQLException err) {
+    			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+    		}
 
         product = new JButton();
 		product.setBounds(125, 103, 170, 170);
@@ -49,7 +63,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
         product.addFocusListener(this);
         product.addMouseListener(this);
         add(product);
-        
+
         productLabel = new JLabel("Productos", SwingConstants.CENTER);
         productLabel.setBounds(125, 273, 170, 30);
 		productLabel.setFont(new Font("Microsoft New Tai Lue", 1, 18));
@@ -120,7 +134,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
 		rights.setBackground(black);
 		rights.setForeground(white);
         add(rights);
-        
+
         tira = new JLabel();
         tira.setBounds(0,0,810,20);
         tira.setBackground(blue);
@@ -167,16 +181,16 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             this.setVisible(false);
         }
     }
-    
+
     //Teclado
     @Override
     public void keyTyped(KeyEvent evt) { //No se ocupa aun
-        
+
     }
 
     @Override
 	public void keyReleased(KeyEvent evt) { //No se ocupa aun
-        
+
 	}
 
     @Override
@@ -201,7 +215,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             }
         }
     }
-    
+
     //Focus
     @Override
     public void focusGained(FocusEvent evt) {
@@ -274,4 +288,54 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
     public void mouseClicked(MouseEvent evt) {
 
     }
+
+    //WindowListener
+  	@Override
+  	public void windowClosing(WindowEvent evt) {
+  		try {
+  			//Actualizamos el estado de sesion de usuario en la db
+  			String usuario = "";
+  			rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+  			while(rs.next()) {
+  				if(rs.getString("sesion_act").equals("s")) {
+  					usuario = rs.getString("nom_usu");
+  					st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+  				}
+  			}
+  			db.desconectar();
+  			System.out.println("Se ha desconectado el usuario: " + usuario);
+  		} catch (SQLException err) {
+  			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+  		}
+  	}
+
+  	@Override
+  	public void windowDeactivated(WindowEvent evt) {
+
+  	}
+
+  	@Override
+  	public void windowActivated(WindowEvent evt) {
+
+  	}
+
+  	@Override
+  	public void windowDeiconified(WindowEvent evt) {
+
+  	}
+
+  	@Override
+  	public void windowIconified(WindowEvent evt) {
+
+  	}
+
+  	@Override
+  	public void windowClosed(WindowEvent evt) {
+
+  	}
+
+  	@Override
+  	public void windowOpened(WindowEvent evt) {
+
+  	}
 }

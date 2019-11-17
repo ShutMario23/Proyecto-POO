@@ -11,10 +11,9 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 	private JLabel user, empresa, rights, password, name, tira2, tira3, tira4;
 	private JTextField userField;
 	private JPasswordField passwordField;
-	//private Color rojochido = new Color(200, 50, 55);
 	private Color blue = new Color(0, 153, 153);
 	private Color blue2 = new Color(2,199,199);
-    private Color blue3= new Color(0, 220, 220);
+  private Color blue3= new Color(0, 220, 220);
 	private Color blue4 = new Color(0, 243, 243);
 	private Color bluefocus = new Color(167, 255, 255);
 	private Color white = new Color(255, 255, 255);
@@ -39,6 +38,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setBackground(white);
 		this.setIconImage(new ImageIcon(getClass().getResource(patchLogo)).getImage());
+		this.addWindowListener(this);
 
 		//Iniciamos la conexion a la db
 		db = new Conexion();
@@ -128,7 +128,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 		singIn.addMouseListener(this);
 		add(singIn);
 	}
-	
+
 	// Botones
 	@Override
 	public void actionPerformed(ActionEvent evt) {
@@ -136,7 +136,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 			String user1 = new String(userField.getText().trim());
 			String password1 = new String(passwordField.getPassword());
 			if(user1.isEmpty() || password1.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.", 
+				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 				userField.setText(null);
 				passwordField.setText(null);
@@ -155,20 +155,22 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 				}
 				if (exist) {
 					try {
+						Integer con = st.executeUpdate("UPDATE Usuario SET sesion_act = 's' WHERE nom_usu = '" + user1 + "'");
+						System.out.println("Update: " + con.toString());
 						db.desconectar();
 						JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
 						Menu menu = new Menu("Men\u00FA");
 						menu.setVisible(true);
 						this.setVisible(false);
 					} catch (SQLException e) {
-						JOptionPane.showMessageDialog(null, "Error: " + e, 
+						JOptionPane.showMessageDialog(null, "Error: " + e,
 							"Error", JOptionPane.ERROR_MESSAGE);
 						userField.setText(null);
 						passwordField.setText(null);
 					}
-					
+
 				} else {
-					JOptionPane.showMessageDialog(null, "Usuario o contrase\u00F1a incorrectos.", 
+					JOptionPane.showMessageDialog(null, "Usuario o contrase\u00F1a incorrectos.",
 						"Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -178,12 +180,12 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 	//Teclado
 	@Override
 	public void keyTyped(KeyEvent evt) { //No se ocupa aun
-        
+
     }
 
 	@Override
 	public void keyReleased(KeyEvent evt) { //No se ocupa aun
-        
+
     }
 
 	@Override
@@ -192,7 +194,7 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 			String user1 = new String(userField.getText().trim());
 			String password1 = new String(passwordField.getPassword());
 			if(user1.isEmpty() || password1.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.", 
+				JOptionPane.showMessageDialog(null, "Debe llenar todos los campos.",
 					"Error", JOptionPane.ERROR_MESSAGE);
 				userField.setText(null);
 				passwordField.setText(null);
@@ -211,6 +213,8 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 				}
 				if (exist) {
 					try {
+						st.executeUpdate("UPDATE Usuario SET sesion_act = 's' WHERE nom_usu = '" + user1 + "'");
+						System.out.println("Ha iniciado sesion el usuario: " + user1);
 						db.desconectar();
 						JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
 						Menu menu = new Menu("Men\u00FA");
@@ -219,9 +223,9 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 					} catch (SQLException e) {
 						JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
 					}
-						
+
 				} else {
-					JOptionPane.showMessageDialog(null, "Usuario o contrase\u00F1a incorrectos.", 
+					JOptionPane.showMessageDialog(null, "Usuario o contrase\u00F1a incorrectos.",
 						"Error", JOptionPane.ERROR_MESSAGE);
 					userField.setText(null);
 					passwordField.setText(null);
@@ -290,13 +294,14 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 
     @Override
     public void mouseClicked(MouseEvent evt) {
-        
+
 	}
-	
+
 	//ventana
 	@Override
 	public void windowClosing(WindowEvent evt) {
 		try {
+			System.out.println("Se ha perdido la conexion a la base de datos.");
 			db.desconectar();
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Error: " + e, "Error", JOptionPane.ERROR_MESSAGE);
@@ -310,27 +315,27 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 
 	@Override
 	public void windowActivated(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowClosed(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent evt) {
-		
+
 	}
 
 	public static void main(String args[]) {
