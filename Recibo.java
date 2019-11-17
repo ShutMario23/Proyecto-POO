@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.Calendar;
 import javax.swing.table.*;
 
-public class Recibo extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
+public class Recibo extends JFrame implements ActionListener, FocusListener, MouseListener, WindowListener {
 
     private Color blue = new Color(0, 153, 153);
     private Color blue2 = new Color(2, 199, 199);
@@ -305,32 +305,6 @@ public class Recibo extends JFrame implements ActionListener, KeyListener, Focus
             this.setVisible(false);
         }
     }
-
-    //Teclado
-    @Override
-    public void keyTyped(KeyEvent evt){
-
-    }
-
-    @Override
-	public void keyReleased(KeyEvent evt) {
-        
-    }
-
-	@Override
-	public void keyPressed(KeyEvent evt) {
-        if(evt.getKeyCode() == 10){
-            if(evt.getSource() == salir) {
-                Menu menu = new Menu("Men\u00FA");
-                menu.setVisible(true);
-                this.setVisible(false);
-            } else if (evt.getSource() == factura){
-                Factura f1 = new Factura("Factura");
-                f1.setVisible(true);
-                this.setVisible(false);
-            }
-        }
-	}
 
 	//Focus
 	@Override

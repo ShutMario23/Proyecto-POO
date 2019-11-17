@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.Calendar;
 import javax.swing.table.*;
 
-public class Factura extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener {
+public class Factura extends JFrame implements ActionListener, FocusListener, MouseListener, WindowListener {
 
     private Color blue = new Color(0, 153, 153);
     private Color blue2 = new Color(2, 199, 199);
@@ -248,28 +248,6 @@ public class Factura extends JFrame implements ActionListener, KeyListener, Focu
             this.setVisible(false);
         }
     }
-
-    //Teclado
-    @Override
-    public void keyTyped(KeyEvent evt){
-
-    }
-
-    @Override
-	public void keyReleased(KeyEvent evt) {
-        
-    }
-
-	@Override
-	public void keyPressed(KeyEvent evt) {
-        if(evt.getKeyCode() == 10){
-            if(evt.getSource() == salir) {
-                Menu menu = new Menu("Men\u00FA");
-                menu.setVisible(true);
-                this.setVisible(false);
-            }
-        }
-	}
 
 	//Focus
 	@Override

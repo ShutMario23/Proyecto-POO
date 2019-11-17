@@ -101,7 +101,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		no_cotField.setHorizontalAlignment(JTextField.CENTER); 
 		no_cotField.setEditable(false);
 		no_cotField.setForeground(blue);
-		no_cotField.addKeyListener(this);
 		mostrarCot.add(no_cotField);
 
 		fechaLabel = new JLabel("Fecha: " + dia + "/" + mes + "/" + anio);
@@ -287,8 +286,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		cancelar.setBackground(blue);
 		cancelar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		cancelar.setForeground(white);
+		cancelar.addFocusListener(this);
 		cancelar.addActionListener(this);
-		cancelar.addKeyListener(this);
 		cancelar.addMouseListener(this);
 		mostrarCot.add(cancelar);
 
@@ -297,8 +296,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		borrar.setBackground(blue);
 		borrar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		borrar.setForeground(white);
+		borrar.addFocusListener(this);
 		borrar.addActionListener(this);
-		borrar.addKeyListener(this);
 		borrar.addMouseListener(this);
 		mostrarCot.add(borrar);
 
@@ -307,8 +306,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregar.setBackground(blue);
 		agregar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		agregar.setForeground(white);
+		agregar.addFocusListener(this);
 		agregar.addActionListener(this);
-		agregar.addKeyListener(this);
 		agregar.addMouseListener(this);
 		mostrarCot.add(agregar);
 
@@ -317,8 +316,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		guardar.setBackground(blue);
 		guardar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		guardar.setForeground(white);
+		guardar.addFocusListener(this);
 		guardar.addActionListener(this);
-		guardar.addKeyListener(this);
 		guardar.addMouseListener(this);
 		mostrarCot.add(guardar);
 
@@ -430,6 +429,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
         prod_com.setBackground(gray);
 		prod_com.setForeground(black);
 		prod_com.addFocusListener(this);
+		prod_com.addKeyListener(this);
 
 		tipoProducto = tipo_prod.getSelectedItem().toString();
 
@@ -519,7 +519,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		cant_txt.setBackground(white);
 		cant_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
 		cant_txt.setForeground(black);
-		cant_txt.setText("1");
+		cant_txt.setText("1");	
 		cant_txt.setHorizontalAlignment(JTextField.CENTER);
 		cant_txt.setEditable(false);
 		agregarCot.add(cant_txt);
@@ -559,6 +559,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		regresar.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		regresar.setForeground(white);
 		regresar.addActionListener(this);
+		regresar.addKeyListener(this);
 		regresar.addFocusListener(this);
 		regresar.addMouseListener(this);
 		agregarCot.add(regresar);
@@ -569,6 +570,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		agregarcot.setFont(new Font("Microsoft New Tai Lue", 1, 16));
 		agregarcot.setForeground(white);
 		agregarcot.addFocusListener(this);
+		agregarcot.addKeyListener(this);
 		agregarcot.addActionListener(this);
 		agregarcot.addMouseListener(this);
 		agregarCot.add(agregarcot);
@@ -748,16 +750,15 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 	@Override
 	public void keyPressed(KeyEvent evt) {
-		if(evt.getSource() == this.cancelar) {
-			Menu m = new Menu("Men\u00FA");
-			m.setVisible(true);
-			this.setVisible(false);
-			try {
-				db.desconectar();
-			} catch(SQLException err) {
-				JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+		if (evt.getKeyCode() == 10){
+			if(evt.getSource() == this.agregar) { 
+				mostrarCot.setVisible(false);
+				agregarCot.setVisible(true);
+			} else if(evt.getSource() == this.regresar) { 
+				mostrarCot.setVisible(true);
+				agregarCot.setVisible(false);
 			}
-		}
+		}	
 	}
 
 	//FocusListener

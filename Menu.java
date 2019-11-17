@@ -153,9 +153,17 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
             c1.setVisible(true);
             this.setVisible(false);
-		} else if (evt.getSource() == employee) {  //Código temporar para calar factura
-            Factura f1 = new Factura("Factura");
-            f1.setVisible(true);
+		} else if(evt.getSource() == product) {
+            Producto p1 = new Producto("Producto");
+            p1.setVisible(true);
+            this.setVisible(false);
+        } else if (evt.getSource() == provider) {
+            Proveedor prov = new Proveedor("Proveedor");
+            prov.setVisible(true);
+            this.setVisible(false);
+        } else if (evt.getSource() == employee) {
+            Empleado e1 = new Empleado("Empleado");
+            e1.setVisible(true);
             this.setVisible(false);
         }
     }
@@ -177,6 +185,18 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
             if(evt.getSource() == sale) {
                 Cotizacion c1 = new Cotizacion("Cotizaci\u00F3n");
                 c1.setVisible(true);
+                this.setVisible(false);
+            } else if(evt.getSource() == product) {
+                Producto p1 = new Producto("Producto");
+                p1.setVisible(true);
+                this.setVisible(false);
+            } else if (evt.getSource() == provider) {
+                Proveedor prov = new Proveedor("Proveedor");
+                prov.setVisible(true);
+                this.setVisible(false);
+            } else if (evt.getSource() == employee) {
+                Empleado e1 = new Empleado("Empleado");
+                e1.setVisible(true);
                 this.setVisible(false);
             }
         }
