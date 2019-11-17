@@ -155,8 +155,8 @@ public class Login extends JFrame implements ActionListener, KeyListener, FocusL
 				}
 				if (exist) {
 					try {
-						Integer con = st.executeUpdate("UPDATE Usuario SET sesion_act = 's' WHERE nom_usu = '" + user1 + "'");
-						System.out.println("Update: " + con.toString());
+						st.executeUpdate("UPDATE Usuario SET sesion_act = 's' WHERE nom_usu = '" + user1 + "'");
+						System.out.println("Ha iniciado sesion el usuario: " + user1);
 						db.desconectar();
 						JOptionPane.showMessageDialog(null, "Bienvenido " + user1 + ".", "Bienvenida", 0, ok);
 						Menu menu = new Menu("Men\u00FA");

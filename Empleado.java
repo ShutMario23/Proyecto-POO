@@ -38,7 +38,7 @@ public class Empleado extends JFrame implements ActionListener, KeyListener, Foc
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(new ImageIcon(getClass().getResource("images/Logo.png")).getImage());
         this.addWindowListener(this);
-        
+
         //Panel para mostrar
         mostrarResultados=new JPanel();
         mostrarResultados.setBounds(0,0,810,650);
@@ -89,7 +89,7 @@ public class Empleado extends JFrame implements ActionListener, KeyListener, Foc
         tira4.setBounds(0,36,810,4);
         tira4.setBackground(new Color(0,243,243));
         tira4.setOpaque(true);
-        mostrarResultados.add(tira4); 
+        mostrarResultados.add(tira4);
 
         rights=new JLabel("Cristaler\u00eda San Rom\u00e1n. \u00A9 Copyright 2019. Todos los derechos reservados.",SwingConstants.CENTER);
         rights.setBounds(0,591,810,30);
@@ -98,7 +98,7 @@ public class Empleado extends JFrame implements ActionListener, KeyListener, Foc
         rights.setBackground(new Color(0,0,0));
         rights.setForeground(new Color(255,255,255));
         mostrarResultados.add(rights);
-        
+
         busqueda=new JLabel("B\u00FAsqueda de empleados");
         busqueda.setBounds(50, 60, 300, 40);
         busqueda.setForeground(blue);
@@ -218,9 +218,9 @@ public class Empleado extends JFrame implements ActionListener, KeyListener, Foc
 		tabla.getColumnModel().getColumn(2).setPreferredWidth(70); //Precio
         tabla.setRowHeight(25);
 		tabla.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16)); 
-		tabla.getTableHeader().setForeground(white); 
-		tabla.getTableHeader().setBackground(blue); 
+		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16));
+		tabla.getTableHeader().setForeground(white);
+		tabla.getTableHeader().setBackground(blue);
 		tabla.setBackground(white);
 		tabla.setForeground(black);
 		tabla.setFont(new Font("Microsoft New Tai Lue", 0, 14));
@@ -534,18 +534,28 @@ public class Empleado extends JFrame implements ActionListener, KeyListener, Foc
 
     @Override
     public void mouseClicked(MouseEvent evt) {
-        
+
 	}
-	
+
 	//WindowListener
 	@Override
 	public void windowClosing(WindowEvent evt) {
-		try {
-			db.desconectar();
-			System.out.println("Se ha desconectado de la base de datos.");
-		} catch (SQLException err) {
-			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
-		}
+    try {
+      //Actualizamos el estado de sesion de usuario en la db
+      String usuario = "";
+      rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+      while(rs.next()) {
+        if(rs.getString("sesion_act").equals("s")) {
+          usuario = rs.getString("nom_usu");
+          st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+          break;
+        }
+      }
+      db.desconectar();
+      System.out.println("Se ha desconectado el usuario: " + usuario);
+    } catch (SQLException err) {
+      JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+    }
 	}
 
 	@Override
@@ -555,32 +565,32 @@ public class Empleado extends JFrame implements ActionListener, KeyListener, Foc
 
 	@Override
 	public void windowActivated(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowClosed(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent evt) {
-		
+
 	}
 
 	//ItemListener
 	@Override
 	public void itemStateChanged(ItemEvent evt) {
-		
+
     }
 }

@@ -337,6 +337,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         if(rs.getString("sesion_act").equals("s")) {
           usuario = rs.getString("nom_usu");
           st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+          break;
         }
       }
       db.desconectar();

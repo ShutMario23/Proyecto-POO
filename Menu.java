@@ -300,6 +300,7 @@ public class Menu extends JFrame implements ActionListener, KeyListener, FocusLi
   				if(rs.getString("sesion_act").equals("s")) {
   					usuario = rs.getString("nom_usu");
   					st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+            break;
   				}
   			}
   			db.desconectar();
