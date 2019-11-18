@@ -12,8 +12,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	  private Color white = new Color(255, 255, 255);
-	  private Color black = new Color(0, 0, 0);
+	private Color white = new Color(255, 255, 255);
+    private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
@@ -24,7 +24,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private JButton salir, guardar, factura;
     private Conexion db;
   	private Statement st;
-  	private ResultSet rs;
+    private ResultSet rs;
+    private Integer id;
 
     public Recibo (String title) {
         this.setLayout(null);
@@ -38,19 +39,22 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         this.addWindowListener(this);
 
         //Iniciamos la conexion a la db
-    		db = new Conexion();
-    		try {
-    			db.conectar();
-          st = db.getConexion().createStatement();
-    		} catch (SQLException e) {
-    			JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    		}
+    	db = new Conexion();
+    	try {
+    		db.conectar();
+            st = db.getConexion().createStatement();
+            rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
+            rs.next();
+            id = rs.getInt(1); //Maxima id de Recibo
+    	} catch (SQLException e) {
+    		JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    	}
 
         //obtenemos fecha actual
-    		fecha = Calendar.getInstance();
-    		dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-    		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-    		anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+    	fecha = Calendar.getInstance();
+    	dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+    	anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
 
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
@@ -72,13 +76,14 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         id_rec = new JLabel("Id Recibo: 0");
         id_rec.setBounds(410, 30, 100, 15);
         id_rec.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+        id_rec.setText("Id Recibo: "+ id.toString()+ "");
         id_rec.setForeground(black);
         add(id_rec);
 
         fechaLabel = new JLabel("Fecha:     " + dia + "/" + mes + "/" + anio);
-    		fechaLabel.setBounds(410, 45, 152, 15);
-    		fechaLabel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
-    		fechaLabel.setForeground(black);
+    	fechaLabel.setBounds(410, 45, 152, 15);
+    	fechaLabel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+		fechaLabel.setForeground(black);
         add(fechaLabel);
 
         atendido = new JLabel("<html><b>Atendido Por: </b></html>");
@@ -210,7 +215,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         iva_txt = new JLabel("0", SwingConstants.RIGHT);
         iva_txt.setBounds(290, posy + 44, 50, 15);
         iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
-        iva.setForeground(black);
+        iva_txt.setForeground(black);
         add(iva_txt);
 
         total = new JLabel("Total: ");
@@ -302,6 +307,49 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         factura.addFocusListener(this);
         factura.addMouseListener(this);
         add(factura);
+
+        String idRec = id_rec.getText();
+        String idCl ="";
+        String nomCliente = "";
+        String telCliente = "";
+		String dirCliente = "";
+		String corrCliente = "";
+        String idEmpleado = "";
+        String subRec = "";
+        String ivaRec = "";
+        String totRec = "";
+        String antiRec = "";
+        String pendRec = "";
+
+        //Llamando los datos de la DB
+        try {
+            //Lamando los datos de Cotizacion
+            rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + idRec + "'");
+            rs.next();
+
+            idCl = rs.getString("id_cl");
+            idEmpleado = rs.getString("id_emp");
+            subRec = rs.getString("sub_cot");
+            // ivaRec = rs.getString("iva_cot");
+            // totRec = rs.getString("tot_cot");
+            // antiRec = rs.getString("ant_cot");
+            // pendRec = rs.getString("pend_cot");
+
+            sbt_txt.setText(subRec.toString());
+            // total_txt.setText(totRec.toString());
+            // iva_txt.setText(ivaRec.toString());
+            // anti_txt.setText(antiRec.toString());
+            // pend_txt.setText(pendRec.toString());
+
+
+            //Obtenemos los datos del cliente
+            // rs = st.executeQuery("SELECT MAX(id_cl), id_emp, nom_cl, tel_cl, dir_cl, corr_cl FROM Cliente");
+            
+            // nom_cliente.setText(nomCliente);
+
+        } catch(SQLException err) {
+            JOptionPane.showMessageDialog(null, err.toString());
+        }
     }
 
     //Botones
@@ -397,25 +445,25 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
 	}
 
-  //WindowListener
-  @Override
-  public void windowClosing(WindowEvent evt) {
-    try {
-      //Actualizamos el estado de sesion de usuario en la db
-      String usuario = "";
-      rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
-      while(rs.next()) {
-        if(rs.getString("sesion_act").equals("s")) {
-          usuario = rs.getString("nom_usu");
-          st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+    //WindowListener
+    @Override
+    public void windowClosing(WindowEvent evt) {
+        try {
+            //Actualizamos el estado de sesion de usuario en la db
+            String usuario = "";
+            rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+            while(rs.next()) {
+                if(rs.getString("sesion_act").equals("s")) {
+                usuario = rs.getString("nom_usu");
+                st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+                }
+            }
+            db.desconectar();
+            System.out.println("Se ha desconectado el usuario: " + usuario);
+        } catch (SQLException err) {
+            JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
         }
-      }
-      db.desconectar();
-      System.out.println("Se ha desconectado el usuario: " + usuario);
-    } catch (SQLException err) {
-      JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
     }
-  }
 
 	@Override
 	public void windowDeactivated(WindowEvent evt) {

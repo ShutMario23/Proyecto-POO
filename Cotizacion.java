@@ -8,10 +8,10 @@ import javax.swing.table.*;
 public class Cotizacion extends JFrame implements ActionListener, KeyListener, FocusListener, MouseListener, WindowListener, ItemListener {
 
 	private Color blue = new Color(0, 153, 153);
-  private Color blue2 = new Color(2, 199, 199);
-  private Color blue3= new Color(0, 220, 220);
-  private Color blue4 = new Color(0, 243, 243);
-  private Color bluefocus = new Color(167, 255, 255);
+  	private Color blue2 = new Color(2, 199, 199);
+  	private Color blue3= new Color(0, 220, 220);
+ 	private Color blue4 = new Color(0, 243, 243);
+  	private Color bluefocus = new Color(167, 255, 255);
 	private Color white = new Color(255, 255, 255);
 	private Color black = new Color(0, 0, 0);
 	private Color gray = new Color(224, 224, 224);
@@ -188,17 +188,17 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 									   "Cantidad", "Precio total"};
 
 		modelo = new DefaultTableModel(null, campos);
-    tabla = new JTable(modelo) {
-    	@Override
-      public boolean isCellEditable(int row, int column) {
-        //all cells false
-        return false;
-      }
-    };
+    	tabla = new JTable(modelo) {
+    		@Override
+      		public boolean isCellEditable(int row, int column) {
+        	//all cells false
+        	return false;
+     		}
+    	};
 
-    tabla.getTableHeader().setReorderingAllowed(false);
-    tabla.getTableHeader().setResizingAllowed(false);
-    scroll = new JScrollPane(tabla);
+    	tabla.getTableHeader().setReorderingAllowed(false);
+    	tabla.getTableHeader().setResizingAllowed(false);
+    	scroll = new JScrollPane(tabla);
 		scroll.setBounds(30, 225, 745, 180);
 		tabla.getColumnModel().getColumn(0).setPreferredWidth(25); //Id
 		tabla.getColumnModel().getColumn(1).setPreferredWidth(140); //Nombre
@@ -689,7 +689,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
-					}
+					}	
+					mostrarCot.setVisible(true);
+					agregarCot.setVisible(false);
 				} catch(NumberFormatException err) {
 					JOptionPane.showMessageDialog(null, "Solamente debe ingresar n\u00FAmeros.");
 					System.out.println(err);
@@ -701,8 +703,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			String dirCliente = dir_txt.getText();
 			String corrCliente = corr_txt.getText();
 			String antiCliente = anti_txt.getText();
+			String pend = pend_txt.getText();
 			String idEmpleado = "";
-			if(nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty()) {
+			if(nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty() || pend.isEmpty()){
 				JOptionPane.showMessageDialog(null, "Se deben llenar todos los campos.");
 			} else {
 
