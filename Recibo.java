@@ -12,7 +12,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	private Color white = new Color(255, 255, 255);
+	  private Color white = new Color(255, 255, 255);
     private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
@@ -39,22 +39,22 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         this.addWindowListener(this);
 
         //Iniciamos la conexion a la db
-    	db = new Conexion();
-    	try {
-    		db.conectar();
+    	  db = new Conexion();
+    	  try {
+    		    db.conectar();
             st = db.getConexion().createStatement();
-            rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
+            rs = st.executeQuery("SELECT MAX(id_rec) FROM Recibo");
             rs.next();
-            id = rs.getInt(1); //Maxima id de Recibo
-    	} catch (SQLException e) {
-    		JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    	}
+            id = rs.getInt(1) + 1; //Maxima id de Recibo
+    	  } catch (SQLException e) {
+    		    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    	  }
 
         //obtenemos fecha actual
-    	fecha = Calendar.getInstance();
-    	dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-    	anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+    	  fecha = Calendar.getInstance();
+    	  dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+		    mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+    	  anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
 
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
@@ -160,7 +160,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         tabla.setForeground(black);
         tabla.setFont(new Font("Microsoft New Tai Lue", 0, 10));
 
-        //Haz la connexion, y llena la tabla aqui
+        //Haz la connexion, y llena la tabla aqui | No gracias
         modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
         modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
         modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
@@ -312,8 +312,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         String idCl ="";
         String nomCliente = "";
         String telCliente = "";
-		String dirCliente = "";
-		String corrCliente = "";
+		    String dirCliente = "";
+		    String corrCliente = "";
         String idEmpleado = "";
         String subRec = "";
         String ivaRec = "";
@@ -321,31 +321,34 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         String antiRec = "";
         String pendRec = "";
 
-        //Llamando los datos de la DB
         try {
             //Lamando los datos de Cotizacion
-            rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + idRec + "'");
+            rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + id.toString() + "'");
             rs.next();
 
             idCl = rs.getString("id_cl");
             idEmpleado = rs.getString("id_emp");
             subRec = rs.getString("sub_cot");
-            // ivaRec = rs.getString("iva_cot");
-            // totRec = rs.getString("tot_cot");
-            // antiRec = rs.getString("ant_cot");
-            // pendRec = rs.getString("pend_cot");
+            ivaRec = rs.getString("iva_cot");
+            totRec = rs.getString("tot_cot");
+            antiRec = rs.getString("ant_cot");
+            pendRec = rs.getString("pend_cot");
 
             sbt_txt.setText(subRec.toString());
-            // total_txt.setText(totRec.toString());
-            // iva_txt.setText(ivaRec.toString());
-            // anti_txt.setText(antiRec.toString());
-            // pend_txt.setText(pendRec.toString());
+            total_txt.setText(totRec.toString());
+            iva_txt.setText(ivaRec.toString());
+            anti_txt.setText(antiRec.toString());
+            pend_txt.setText(pendRec.toString());
 
 
             //Obtenemos los datos del cliente
-            // rs = st.executeQuery("SELECT MAX(id_cl), id_emp, nom_cl, tel_cl, dir_cl, corr_cl FROM Cliente");
-            
-            // nom_cliente.setText(nomCliente);
+            rs = st.executeQuery("SELECT MAX(id_cl) FROM Cliente");
+            rs.next();
+            String maxIdCliente = rs.getString(1);
+            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl = '" + maxIdCliente + "'");
+            rs.next();
+            nomCliente = rs.getString("nom_cl");
+            nom_cliente.setText(nomCliente);
 
         } catch(SQLException err) {
             JOptionPane.showMessageDialog(null, err.toString());

@@ -34,6 +34,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	private JComboBox<String> prod_com, tipo_prod;
 	private String tipoProducto, nomProducto, precioUnitario, idProducto;
 	private Double totalCot = 0.00;
+	private Boolean existClient = false;
 
 	public Cotizacion(String title) {
 		this.setLayout(null);;
@@ -45,6 +46,8 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		this.getContentPane().setBackground(white);
 		this.setIconImage(new ImageIcon(getClass().getResource("images/Logo.png")).getImage());
 		this.addWindowListener(this);
+
+		idCliente = 0;
 
 		//Panel para agregar cotizacion
 		agregarCot = new JPanel();
@@ -74,9 +77,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
 			rs.next();
 			id = rs.getInt(1) + 1; //maxima id de cotizaciones + 1
-			rs = st.executeQuery("SELECT MAX(id_cl) FROM Cliente");
-			rs.next();
-			idCliente = rs.getInt(1) + 1; //maxima id de clientes + 1
 		} catch(SQLException err) {
 			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -120,7 +120,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		id_cliente_txt = new JTextField();
 		id_cliente_txt.setBounds(159, 95, 50, 30);
 		id_cliente_txt.setFont(new Font("Microsoft New Tai Lue", 0, 18));
-		id_cliente_txt.setText(idCliente.toString());
 		id_cliente_txt.setHorizontalAlignment(JTextField.CENTER);
 		id_cliente_txt.setEditable(false);
 		id_cliente_txt.setBackground(gray);
@@ -689,7 +688,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
-					}	
+					}
 					mostrarCot.setVisible(true);
 					agregarCot.setVisible(false);
 				} catch(NumberFormatException err) {
@@ -713,21 +712,24 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					double anticipo = Double.parseDouble(antiCliente);
 					if(!(anticipo < 0.0)) {
 						try {
-							//Obtenemos al empleado que hizo la cotizacion.
-							String usuario = "";
-							rs = st.executeQuery("SELECT id_emp, sesion_act FROM Usuario");
-							while(rs.next()) {
-								if(rs.getString("sesion_act").equals("s")) {
-									idEmpleado = rs.getString("id_emp");
-									break;
+							if(!existClient) { //si no existe el cliente, obtenemos al empleado que hizo la cotizacion
+								rs = st.executeQuery("SELECT id_emp, sesion_act FROM Usuario");
+								while(rs.next()) {
+									if(rs.getString("sesion_act").equals("s")) {
+										idEmpleado = rs.getString("id_emp");
+										break;
+									}
 								}
+								//Se agrega el cliente a la db
+								String camposCliente = "'" + idCliente.toString() +  "', '" + idEmpleado + "', '" + nomCliente +
+								"', '" + telCliente + "', '" + dirCliente + "', '" + corrCliente + "'";
+								st.executeUpdate("INSERT INTO Cliente (id_cl, id_emp, nom_cl, tel_cl, dir_cl, corr_cl)" +
+								" VALUES (" + camposCliente + ")");
+							} else {
+								rs = st.executeQuery("SELECT id_emp FROM Cliente WHERE id_cl = '" + idCliente.toString() + "'");
+								rs.next();
+								idEmpleado = rs.getString("id_emp");
 							}
-
-							//Se agrega el cliente a la db
-							String camposCliente = "'" + idCliente.toString() +  "', '" + idEmpleado + "', '" + nomCliente +
-							"', '" + telCliente + "', '" + dirCliente + "', '" + corrCliente + "'";
-							st.executeUpdate("INSERT INTO Cliente (id_cl, id_emp, nom_cl, tel_cl, dir_cl, corr_cl)" +
-							" VALUES (" + camposCliente + ")");
 
 							//Se agrega la cotizacion a la db
 							String camposCotizacion = "'" + no_cotField.getText() + "', '" + idCliente.toString() +  "', '" + idEmpleado + "', '" +
@@ -860,6 +862,55 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		if(evt.getSource() == this.id_cliente_txt) {
 			this.id_cliente_txt.setBackground(gray);
 		} else if (evt.getSource() == this.nom_cliente_txt) {
+			String nombre = nom_cliente_txt.getText();
+			if(!nombre.equals("")) {
+				try {
+					rs = st.executeQuery("SELECT id_cl, tel_cl, dir_cl, corr_cl FROM Cliente WHERE nom_cl = '" + nombre + "'");
+					existClient = rs.next();
+					if(existClient) { //si existe se le asigna la misma id
+						idCliente = rs.getInt("id_cl");
+						id_cliente_txt.setEditable(true);
+						id_cliente_txt.setText(idCliente.toString());
+						id_cliente_txt.setEditable(false);
+
+						String telCliente = rs.getString("tel_cl");
+						tel_txt.setEditable(true);
+						tel_txt.setText(telCliente);
+						tel_txt.setEditable(false);
+
+						String dirCliente = rs.getString("dir_cl");
+						dir_txt.setEditable(true);
+						dir_txt.setText(dirCliente);
+						dir_txt.setEditable(false);
+
+						String corrCliente = rs.getString("corr_cl");
+						corr_txt.setEditable(true);
+						corr_txt.setText(corrCliente);
+						corr_txt.setEditable(false);
+					} else { //si no se crea una nueva id
+						rs = st.executeQuery("SELECT MAX(id_cl) FROM Cliente");
+						rs.next();
+						idCliente = rs.getInt(1) + 1; //maxima id de clientes + 1
+						id_cliente_txt.setEditable(true);
+						id_cliente_txt.setText(idCliente.toString());
+						id_cliente_txt.setEditable(false);
+
+						tel_txt.setEditable(true);
+						tel_txt.setText("");
+						tel_txt.setEditable(false);
+
+						dir_txt.setEditable(true);
+						dir_txt.setText("");
+						dir_txt.setEditable(false);
+
+						corr_txt.setEditable(true);
+						corr_txt.setText("");
+						corr_txt.setEditable(false);
+					}
+				} catch(SQLException err) {
+					System.out.println(err.toString());
+				}
+			}
 			this.nom_cliente_txt.setBackground(gray);
 		} else if (evt.getSource() == this. tel_txt) {
 			this.tel_txt.setBackground(gray);
