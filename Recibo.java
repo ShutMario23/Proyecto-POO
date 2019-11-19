@@ -12,22 +12,24 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	  private Color white = new Color(255, 255, 255);
+	private Color white = new Color(255, 255, 255);
     private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
     private JLabel logo, dir_em, tel_em, id_rec, fechaLabel, atendido, nom_cliente, dir, tel, corr, head_tabla;
     private JLabel sbt, iva, total, sbt_txt, iva_txt, total_txt, anti, anti_txt, pend, pend_txt, firma, linea_f, firma_c, linea_c;
+    private JLabel nom_cliente_txt, dir_txt, tel_txt, corr_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar, factura;
     private Conexion db;
   	private Statement st;
     private ResultSet rs;
-    private Integer id;
+    private Integer id, idCl, idEmp;
+    private String idCliente, idEmpleado;
 
-    public Recibo (String title) {
+    public Recibo (String title, String idCliente, String idEmpleado) {
         this.setLayout(null);
         this.setResizable(false);
         this.setBounds(0, 0, 561, 726); //X27
@@ -76,7 +78,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         id_rec = new JLabel("Id Recibo: 0");
         id_rec.setBounds(410, 30, 100, 15);
         id_rec.setFont(new Font("Microsoft New Tai Lue", 1, 11));
-        id_rec.setText("Id Recibo: "+ id.toString()+ "");
+        id_rec.setText("Id Recibo:       "+ id.toString()+ "");
         id_rec.setForeground(black);
         add(id_rec);
 
@@ -86,33 +88,37 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 		fechaLabel.setForeground(black);
         add(fechaLabel);
 
-        atendido = new JLabel("<html><b>Atendido Por: </b></html>");
+        atendido = new JLabel("Atendido Por: ");
         atendido.setBounds(30, 115, 350, 15);
-        atendido.setFont(new Font("Microsoft New Tai Lue", 0 , 11));
+        atendido.setFont(new Font("Microsoft New Tai Lue", 1 , 11));
         atendido.setBackground(black);
         add(atendido);
 
-        nom_cliente = new JLabel("<html><b>Receptor: </b></html>");
+        nom_cliente = new JLabel("Receptor: ");
         nom_cliente.setBounds(30, 133, 300, 15);
-        nom_cliente.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        nom_cliente.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         nom_cliente.setForeground(black);
         add(nom_cliente);
 
-        tel = new JLabel("<html><b>Tel\u00E9fono: </b></html>");
+        nom_cliente_txt = new JLabel();
+        nom_cliente_txt.setBounds(100, 133, 170, 15);
+        nom_cliente_txt.setFont( new Font("Microsoft New Tai Lue", 0, 11));
+
+        tel = new JLabel("Tel\u00E9fono: ");
         tel.setBounds(350, 133, 100, 15);
-        tel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        tel.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         tel.setForeground(black);
         add(tel);
 
-        dir = new JLabel("<html><b>Direcci\u00F3n: </b></html>");
+        dir = new JLabel("Direcci\u00F3n: ");
         dir.setBounds(30, 151, 500, 15);
-        dir.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        dir.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         dir.setForeground(black);
         add(dir);
 
-        corr = new JLabel("<html><b>Correo electr\u00F3nico: </b></html>");
+        corr = new JLabel("Correo electr\u00F3nico: ");
         corr.setBounds(30, 169, 300, 15);
-        corr.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        corr.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         corr.setForeground(black);
         add(corr);
 
@@ -288,12 +294,10 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         factura.addMouseListener(this);
         add(factura);
 
-        String idRec = id_rec.getText();
         String nomCliente = "";
         String telCliente = "";
 		String dirCliente = "";
         String corrCliente = "";
-        String idCl, idEmpleado;
         Double subRec, ivaRec, totRec, antiRec, pendRec;
 
         try {
@@ -301,30 +305,24 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
             rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + id + "'");
             rs.next();
 
-            idCl = rs.getString("id_cl");
-            idEmpleado = rs.getString("id_emp");
             subRec = rs.getDouble("sub_cot");
             ivaRec = rs.getDouble("iva_cot");
             totRec = rs.getDouble("tot_cot");
             antiRec = rs.getDouble("ant_cot");
             pendRec = rs.getDouble("pend_cot");
 
-            Redondear(subRec, 2); sbt_txt.setText(subRec.toString());
-            Redondear(ivaRec, 2); iva_txt.setText(ivaRec.toString());
-            Redondear(totRec, 2); total_txt.setText(totRec.toString());
-            Redondear(antiRec, 2); anti_txt.setText(antiRec.toString());
-            Redondear(pendRec, 2); pend_txt.setText(pendRec.toString());
+            // Redondear(subRec, 2); sbt_txt.setText(subRec.toString());
+            // Redondear(ivaRec, 2); iva_txt.setText(ivaRec.toString());
+            // Redondear(totRec, 2); total_txt.setText(totRec.toString());
+            // Redondear(antiRec, 2); anti_txt.setText(antiRec.toString());
+            // Redondear(pendRec, 2); pend_txt.setText(pendRec.toString());
 
             //Obtenemos los datos del cliente
-            rs = st.executeQuery("SELECT id_cl FROM Cotizacion WHERE id_cl '"+ idCl + "'");
-            rs.next();
-            String IdCliente = rs.getString(1);
-            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl = '" + IdCliente + "'");
+            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl = '" + idCliente + "'");
             rs.next();
             nomCliente = rs.getString("nom_cl");
-            nom_cliente.setText("<html><b>Receptor: </b></html>" + nomCliente.toString() + "");
 
-
+            //nom_cliente_txt.setText(nomCliente);
 
         } catch(SQLException err) {
             JOptionPane.showMessageDialog(null, err.toString());

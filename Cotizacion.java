@@ -766,7 +766,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 							// Pasamos a mostrar el recibo
 							db.desconectar();
 							this.setVisible(false);
-							Recibo r1 = new Recibo("Recibo");
+							Recibo r1 = new Recibo("Recibo", idCliente.toString(), idEmpleado.toString());
 							r1.setVisible(true);
 						} catch(SQLException err) {
 							JOptionPane.showMessageDialog(null, err.toString());
@@ -944,12 +944,17 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} else if (evt.getSource() == this.anti_txt) {
 			try {
 				this.anti_txt.setBackground(gray);
+				//Double abr = Double.parseDouble(this.tot_txt.getText())*0.5;
 				if (Double.parseDouble(this.anti_txt.getText()) < 0)  {
 					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo negativo", "Error", JOptionPane.ERROR_MESSAGE);
 					anti_txt.setText("");
 					pend_txt.setText("");
 				} else if (Double.parseDouble(this.anti_txt.getText()) > Double.parseDouble(this.tot_txt.getText())){
 					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo mayor al total", "Error", JOptionPane.ERROR_MESSAGE);
+					anti_txt.setText("");
+					pend_txt.setText("");
+				} else if (Double.parseDouble(this.anti_txt.getText()) < Double.parseDouble(this.tot_txt.getText())*0.5){
+					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo menor al 50 \u0025 del total", "Error", JOptionPane.ERROR_MESSAGE);
 					anti_txt.setText("");
 					pend_txt.setText("");
 				} else {
@@ -1137,19 +1142,34 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 	   		if(evt.getStateChange() == 1) {
 				tipoProducto = tipo_prod.getSelectedItem().toString();
 				prod_com.removeAllItems();
-				try {
-					rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
-					while(rs.next()) {
-						prod_com.addItem(rs.getString("nom_prod"));
+					try {
+						rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
+						Integer x = 0;
+						while(rs.next()) {
+							prod_com.addItem(rs.getString("nom_prod"));
+							x++;
+						}
+						System.out.println(x);
+					} catch(SQLException err) {
+						JOptionPane.showMessageDialog(null, err);
 					}
-				} catch(SQLException err) {
-					JOptionPane.showMessageDialog(null, err);
-				}
        	  	}
        	} else if(evt.getSource() == this.prod_com) {
 			if(evt.getStateChange() == 1) {
-				nomProducto = prod_com.getSelectedItem().toString();
+				
 				try {
+					try {
+						rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
+						Integer x = 0;
+						while(rs.next()) {
+							prod_com.addItem(rs.getString("nom_prod"));
+							x++;
+						}
+						prod_com.removeItemAt(0);
+						//System.out.println(x);
+					} catch(SQLException err) {
+						JOptionPane.showMessageDialog(null, err);
+					}
 					// Se consulta la id y precio del producto seleccionado
 					rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
 					rs.next();

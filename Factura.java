@@ -161,26 +161,6 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         tabla.setFont(new Font("Microsoft New Tai Lue", 0, 10));
 
         //Haz la connexion, y llena la tabla aqui
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
 
         int rowcount;
         rowcount = tabla.getRowCount()*15;
