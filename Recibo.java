@@ -161,26 +161,6 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         tabla.setFont(new Font("Microsoft New Tai Lue", 0, 10));
 
         //Haz la connexion, y llena la tabla aqui
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
-        modelo.addRow(new String[]{"100", "Cristal", "Barandal", "1200", "UMT", "800", "600", "5", "1200"});
-        modelo.addRow(new String[]{"2", "Cristal", "Barandal", "800", "UML", "50", "900", "10", "20000"});
 
         int rowcount;
         rowcount = tabla.getRowCount()*15;
@@ -201,7 +181,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(sbt);
 
         sbt_txt = new JLabel("0", SwingConstants.RIGHT);
-        sbt_txt.setBounds(290, posy + 25, 50, 15);
+        sbt_txt.setBounds(270, posy + 25, 80, 15);
         sbt_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         sbt_txt.setForeground(black);
         add(sbt_txt);
@@ -213,7 +193,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(iva);
 
         iva_txt = new JLabel("0", SwingConstants.RIGHT);
-        iva_txt.setBounds(290, posy + 44, 50, 15);
+        iva_txt.setBounds(270, posy + 44, 80, 15);
         iva_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         iva_txt.setForeground(black);
         add(iva_txt);
@@ -225,31 +205,31 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(total);
 
         total_txt = new JLabel("0", SwingConstants.RIGHT);
-        total_txt.setBounds(290, posy + 62, 50, 15);
+        total_txt.setBounds(270, posy + 62, 80, 15);
         total_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         total_txt.setForeground(black);
         add(total_txt);
 
         anti = new JLabel("Anticipo: ");
-		anti.setBounds(400, posy + 25, 60, 15);
+		anti.setBounds(390, posy + 25, 60, 15);
 		anti.setFont(new Font("Microsoft New Tai Lue", 1, 11));
 		anti.setForeground(black);
 		add(anti);
 
         anti_txt = new JLabel("0", SwingConstants.RIGHT);
-		anti_txt.setBounds(470, posy + 25, 50, 15);
+		anti_txt.setBounds(440, posy + 25, 80, 15);
 		anti_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
 		anti_txt.setForeground(black);
 		add(anti_txt);
 
 		pend = new JLabel("Pendiente: ");
-		pend.setBounds(400, posy + 44, 60, 15);
+		pend.setBounds(390, posy + 44, 60, 15);
 		pend.setFont(new Font("Microsoft New Tai Lue", 1, 11));
 		pend.setForeground(black);
 		add(pend);
 
 		pend_txt = new JLabel("0", SwingConstants.RIGHT);
-		pend_txt.setBounds(470, posy + 44, 50, 15);
+		pend_txt.setBounds(440, posy + 44, 80, 15);
 		pend_txt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
 		pend_txt.setForeground(black);
         add(pend_txt);
@@ -309,47 +289,55 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(factura);
 
         String idRec = id_rec.getText();
-        String idCl ="";
         String nomCliente = "";
         String telCliente = "";
 		String dirCliente = "";
-		String corrCliente = "";
-        String idEmpleado = "";
-        String subRec = "";
-        String ivaRec = "";
-        String totRec = "";
-        String antiRec = "";
-        String pendRec = "";
+        String corrCliente = "";
+        Integer idCl, idEmpleado;
+        Double subRec, ivaRec, totRec, antiRec, pendRec;
 
         //Llamando los datos de la DB
         try {
             //Lamando los datos de Cotizacion
-            rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + idRec + "'");
+            rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + id + "'");
             rs.next();
 
-            idCl = rs.getString("id_cl");
-            idEmpleado = rs.getString("id_emp");
-            subRec = rs.getString("sub_cot");
-            // ivaRec = rs.getString("iva_cot");
-            // totRec = rs.getString("tot_cot");
-            // antiRec = rs.getString("ant_cot");
-            // pendRec = rs.getString("pend_cot");
+            idCl = rs.getInt("id_cl");
+            idEmpleado = rs.getInt("id_emp");
+            subRec = rs.getDouble("sub_cot");
+            ivaRec = rs.getDouble("iva_cot");
+            totRec = rs.getDouble("tot_cot");
+            antiRec = rs.getDouble("ant_cot");
+            pendRec = rs.getDouble("pend_cot");
 
-            sbt_txt.setText(subRec.toString());
-            // total_txt.setText(totRec.toString());
-            // iva_txt.setText(ivaRec.toString());
-            // anti_txt.setText(antiRec.toString());
-            // pend_txt.setText(pendRec.toString());
-
+            Redondear(subRec, 2); sbt_txt.setText(subRec.toString());
+            Redondear(ivaRec, 2); iva_txt.setText(ivaRec.toString());
+            Redondear(totRec, 2); total_txt.setText(totRec.toString());
+            Redondear(antiRec, 2); anti_txt.setText(antiRec.toString());
+            Redondear(pendRec, 2); pend_txt.setText(pendRec.toString());
 
             //Obtenemos los datos del cliente
-            // rs = st.executeQuery("SELECT MAX(id_cl), id_emp, nom_cl, tel_cl, dir_cl, corr_cl FROM Cliente");
-            
-            // nom_cliente.setText(nomCliente);
+            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl '" + idCl + "'");
+            rs.next();
+
+            nomCliente = rs.getString("nom_cl");
+            telCliente = rs.getString("tel_cl");
+            dirCliente = rs.getString("dir_cl");
+            corrCliente = rs.getString("corr_cl");
+
+            nom_cliente.setText("<html><b>Receptor: </b></html>" + nomCliente + "");
+            tel.setText("<html><b>Tel\u00E9fono: </b></html>" + telCliente + "");
+            dir.setText("<html><b>Direcci\u00F3n: </b></html>" + dirCliente + "");
+            corr.setText("<html><b>Correo electr\u00F3nico: </b></html>" + corrCliente + "");
 
         } catch(SQLException err) {
             JOptionPane.showMessageDialog(null, err.toString());
         }
+    }
+
+    public static double Redondear(double numero,int digitos) {
+        int cifras=(int) Math.pow(10,digitos);
+        return Math.rint(numero*cifras)/cifras;
     }
 
     //Botones

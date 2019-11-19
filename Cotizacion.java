@@ -703,9 +703,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			String dirCliente = dir_txt.getText();
 			String corrCliente = corr_txt.getText();
 			String antiCliente = anti_txt.getText();
-			String pend = pend_txt.getText();
+			String pendCliente = pend_txt.getText();
 			String idEmpleado = "";
-			if(nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty() || pend.isEmpty()){
+			if(nomCliente.isEmpty() || telCliente.isEmpty() || dirCliente.isEmpty() ||corrCliente.isEmpty() || antiCliente.isEmpty() || pendCliente.isEmpty()){
 				JOptionPane.showMessageDialog(null, "Se deben llenar todos los campos.");
 			} else {
 
@@ -906,8 +906,11 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					pend_txt.setText("");
 				} else {
 					Double pago = Double.parseDouble(this.tot_txt.getText()) - Double.parseDouble(this.anti_txt.getText());
-					this.pend_txt.setText(String.valueOf(pago));
-					this.pend_txt.setEditable(false);
+					Double pendiente;
+					pendiente = pago;
+					Redondear(pendiente, 2);
+					pend_txt.setText(pendiente.toString());
+					pend_txt.setEditable(false);
 				}
 			} catch(NumberFormatException err) {
 				System.out.println(err);
@@ -932,6 +935,11 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 			this.agregarcot.setForeground(white);
 		}
 	}
+	
+	public static double Redondear(double numero,int digitos) {
+        int cifras=(int) Math.pow(10,digitos);
+        return Math.rint(numero*cifras)/cifras;
+    }
 
 	//MouseListener
 	@Override
