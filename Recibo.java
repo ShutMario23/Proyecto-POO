@@ -12,7 +12,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	private Color white = new Color(255, 255, 255);
+	  private Color white = new Color(255, 255, 255);
     private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
@@ -39,22 +39,22 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         this.addWindowListener(this);
 
         //Iniciamos la conexion a la db
-    	db = new Conexion();
-    	try {
-    		db.conectar();
+    	  db = new Conexion();
+    	  try {
+    		    db.conectar();
             st = db.getConexion().createStatement();
-            rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
+            rs = st.executeQuery("SELECT MAX(id_rec) FROM Recibo");
             rs.next();
-            id = rs.getInt(1); //Maxima id de Recibo
-    	} catch (SQLException e) {
-    		JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    	}
+            id = rs.getInt(1) + 1; //Maxima id de Recibo
+    	  } catch (SQLException e) {
+    		    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    	  }
 
         //obtenemos fecha actual
-    	fecha = Calendar.getInstance();
-    	dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-    	anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+    	  fecha = Calendar.getInstance();
+    	  dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+		    mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+    	  anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
 
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
@@ -293,17 +293,16 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         String telCliente = "";
 		String dirCliente = "";
         String corrCliente = "";
-        Integer idCl, idEmpleado;
+        String idCl, idEmpleado;
         Double subRec, ivaRec, totRec, antiRec, pendRec;
 
-        //Llamando los datos de la DB
         try {
             //Lamando los datos de Cotizacion
             rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + id + "'");
             rs.next();
 
-            idCl = rs.getInt("id_cl");
-            idEmpleado = rs.getInt("id_emp");
+            idCl = rs.getString("id_cl");
+            idEmpleado = rs.getString("id_emp");
             subRec = rs.getDouble("sub_cot");
             ivaRec = rs.getDouble("iva_cot");
             totRec = rs.getDouble("tot_cot");
@@ -317,18 +316,15 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
             Redondear(pendRec, 2); pend_txt.setText(pendRec.toString());
 
             //Obtenemos los datos del cliente
-            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl '" + idCl + "'");
+            rs = st.executeQuery("SELECT id_cl FROM Cotizacion WHERE id_cl '"+ idCl + "'");
             rs.next();
-
+            String IdCliente = rs.getString(1);
+            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl = '" + IdCliente + "'");
+            rs.next();
             nomCliente = rs.getString("nom_cl");
-            telCliente = rs.getString("tel_cl");
-            dirCliente = rs.getString("dir_cl");
-            corrCliente = rs.getString("corr_cl");
+            nom_cliente.setText("<html><b>Receptor: </b></html>" + nomCliente.toString() + "");
 
-            nom_cliente.setText("<html><b>Receptor: </b></html>" + nomCliente + "");
-            tel.setText("<html><b>Tel\u00E9fono: </b></html>" + telCliente + "");
-            dir.setText("<html><b>Direcci\u00F3n: </b></html>" + dirCliente + "");
-            corr.setText("<html><b>Correo electr\u00F3nico: </b></html>" + corrCliente + "");
+
 
         } catch(SQLException err) {
             JOptionPane.showMessageDialog(null, err.toString());
