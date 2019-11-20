@@ -19,14 +19,14 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private String dia, mes, anio;
     private JLabel logo, dir_em, tel_em, id_rec, fechaLabel, atendido, nom_cliente, dir, tel, corr, head_tabla;
     private JLabel sbt, iva, total, sbt_txt, iva_txt, total_txt, anti, anti_txt, pend, pend_txt, firma, linea_f, firma_c, linea_c;
-    private JLabel nom_cliente_txt, dir_txt, tel_txt, corr_txt;
+    private JLabel atendido_txt, nom_cliente_txt, dir_txt, tel_txt, corr_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar, factura;
     private Conexion db;
   	private Statement st;
     private ResultSet rs;
-    private Integer id, idCl, idEmp;
+    private Integer id;
     private String idCliente, idEmpleado;
 
     public Recibo (String title, String idCliente, String idEmpleado) {
@@ -41,22 +41,22 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         this.addWindowListener(this);
 
         //Iniciamos la conexion a la db
-    	  db = new Conexion();
-    	  try {
-    		    db.conectar();
+    	db = new Conexion();
+    	try {
+    		db.conectar();
             st = db.getConexion().createStatement();
             rs = st.executeQuery("SELECT MAX(id_rec) FROM Recibo");
             rs.next();
             id = rs.getInt(1) + 1; //Maxima id de Recibo
-    	  } catch (SQLException e) {
+    	} catch (SQLException e) {
     		    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    	  }
+    	}
 
         //obtenemos fecha actual
-    	  fecha = Calendar.getInstance();
-    	  dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-		    mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-    	  anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+    	fecha = Calendar.getInstance();
+        dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+    	anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
 
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
@@ -89,38 +89,64 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(fechaLabel);
 
         atendido = new JLabel("Atendido Por: ");
-        atendido.setBounds(30, 115, 350, 15);
+        atendido.setBounds(30, 115, 100, 15);
         atendido.setFont(new Font("Microsoft New Tai Lue", 1 , 11));
         atendido.setBackground(black);
         add(atendido);
 
+        atendido_txt = new JLabel("Atendido Por: ");
+        atendido_txt.setBounds(110, 115, 350, 15);
+        atendido_txt.setFont(new Font("Microsoft New Tai Lue", 0 , 11));
+        atendido_txt.setBackground(black);
+        add(atendido_txt);
+
         nom_cliente = new JLabel("Receptor: ");
-        nom_cliente.setBounds(30, 133, 300, 15);
+        nom_cliente.setBounds(30, 133, 70, 15);
         nom_cliente.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         nom_cliente.setForeground(black);
         add(nom_cliente);
 
         nom_cliente_txt = new JLabel();
-        nom_cliente_txt.setBounds(100, 133, 170, 15);
+        nom_cliente_txt.setBounds(90, 133, 180, 15);
         nom_cliente_txt.setFont( new Font("Microsoft New Tai Lue", 0, 11));
+        nom_cliente_txt.setForeground(black);
+        add(nom_cliente_txt);
 
         tel = new JLabel("Tel\u00E9fono: ");
-        tel.setBounds(350, 133, 100, 15);
+        tel.setBounds(350, 133, 60, 15);
         tel.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         tel.setForeground(black);
         add(tel);
 
+        tel_txt = new JLabel();
+        tel_txt.setBounds(410, 133, 500, 15);
+        tel_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        tel_txt.setForeground(black);
+        add(tel_txt);
+
         dir = new JLabel("Direcci\u00F3n: ");
-        dir.setBounds(30, 151, 500, 15);
+        dir.setBounds(30, 151, 60, 15);
         dir.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         dir.setForeground(black);
         add(dir);
 
+        dir_txt = new JLabel();
+        dir_txt.setBounds(90, 151, 390, 15);
+        dir_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        dir_txt.setForeground(black);
+        add(dir_txt);
+
         corr = new JLabel("Correo electr\u00F3nico: ");
-        corr.setBounds(30, 169, 300, 15);
+        corr.setBounds(30, 169, 110, 15);
         corr.setFont(new Font("Microsoft New Tai Lue", 1, 11));
         corr.setForeground(black);
         add(corr);
+
+        corr_txt = new JLabel("Correo electr\u00F3nico: ");
+        corr_txt.setBounds(140, 169, 390, 15);
+        corr_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        corr_txt.setForeground(black);
+        add(corr_txt);
 
         head_tabla = new JLabel("Id     Nombre                     Tipo                P. Unitario   Dise\u00F1o      Largo     Ancho    Cantidad   Precio total");
         head_tabla.setBounds(31, 191, 500, 15);
@@ -166,7 +192,37 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         tabla.setForeground(black);
         tabla.setFont(new Font("Microsoft New Tai Lue", 0, 10));
 
+        String idProducto ="";
+        String nomProducto = "";
+        String tipoProducto = "";
+        String preuProducto = "";
+        String diseProducto = "";
+        String larProducto = "";
+        String anchProducto = "";
+        String cantProducto = "";
+        String pretProducto = "";
+
         //Haz la connexion, y llena la tabla aqui
+        try {
+            rs = st.executeQuery("SELECT * FROM Carrito WHERE id_cot = '" + id +"'");
+            Integer y = 0;
+            while(rs.next()){
+                idProducto = rs.getString("id_prod");
+                // nomProducto = rs.getString("nom_prod");
+                // tipoProducto = rs.getString("tipo_prod");
+                // preuProducto = rs.getString("prec_prod");
+                diseProducto = rs.getString("dis_prod");
+                larProducto = rs.getString("largo_prod");
+                anchProducto = rs.getString("ancho_prod");
+                cantProducto = rs.getString("cant_prod");
+                pretProducto = rs.getString("subt_prod");
+
+                y++;
+                modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, preuProducto, diseProducto, larProducto, anchProducto, cantProducto, pretProducto});
+            }
+        } catch (SQLException err) {
+            JOptionPane.showMessageDialog(null, err);
+        }
 
         int rowcount;
         rowcount = tabla.getRowCount()*15;
@@ -182,7 +238,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
         sbt = new JLabel("Subtotal: ");
         sbt.setBounds(230, posy + 25, 60, 15);
-        sbt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+        sbt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         sbt.setForeground(black);
         add(sbt);
 
@@ -194,7 +250,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
         iva = new JLabel("IVA 16 \u0025: ");
         iva.setBounds(230, posy + 44, 60, 15);
-        iva.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+        iva.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         iva.setForeground(black);
         add(iva);
 
@@ -206,7 +262,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
         total = new JLabel("Total: ");
         total.setBounds(230, posy + 62, 60, 15);
-        total.setFont(new Font("Microsoft New Tai Lue", 1,11));
+        total.setFont(new Font("Microsoft New Tai Lue", 0 ,11));
         total.setForeground(black);
         add(total);
 
@@ -218,7 +274,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
         anti = new JLabel("Anticipo: ");
 		anti.setBounds(390, posy + 25, 60, 15);
-		anti.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+		anti.setFont(new Font("Microsoft New Tai Lue", 0, 11));
 		anti.setForeground(black);
 		add(anti);
 
@@ -230,7 +286,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
 
 		pend = new JLabel("Pendiente: ");
 		pend.setBounds(390, posy + 44, 60, 15);
-		pend.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+		pend.setFont(new Font("Microsoft New Tai Lue", 0, 11));
 		pend.setForeground(black);
 		add(pend);
 
@@ -294,6 +350,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         factura.addMouseListener(this);
         add(factura);
 
+        String nomEmpleado = "";
         String nomCliente = "";
         String telCliente = "";
 		String dirCliente = "";
@@ -301,6 +358,13 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         Double subRec, ivaRec, totRec, antiRec, pendRec;
 
         try {
+            //Llamanod los datos del Empelado
+            rs = st.executeQuery("SELECT nom_emp FROM Empleado WHERE id_emp = '" + idEmpleado + "'");
+            rs.next();
+
+            nomEmpleado = rs.getString("nom_emp");
+            atendido_txt.setText(nomEmpleado);
+
             //Lamando los datos de Cotizacion
             rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + id + "'");
             rs.next();
@@ -311,18 +375,25 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
             antiRec = rs.getDouble("ant_cot");
             pendRec = rs.getDouble("pend_cot");
 
-            // Redondear(subRec, 2); sbt_txt.setText(subRec.toString());
-            // Redondear(ivaRec, 2); iva_txt.setText(ivaRec.toString());
-            // Redondear(totRec, 2); total_txt.setText(totRec.toString());
-            // Redondear(antiRec, 2); anti_txt.setText(antiRec.toString());
-            // Redondear(pendRec, 2); pend_txt.setText(pendRec.toString());
+            Redondear(subRec, 2); sbt_txt.setText(subRec.toString());
+            Redondear(ivaRec, 2); iva_txt.setText(ivaRec.toString());
+            Redondear(totRec, 2); total_txt.setText(totRec.toString());
+            Redondear(antiRec, 2); anti_txt.setText(antiRec.toString());
+            Redondear(pendRec, 2); pend_txt.setText(pendRec.toString());
 
             //Obtenemos los datos del cliente
             rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl = '" + idCliente + "'");
             rs.next();
-            nomCliente = rs.getString("nom_cl");
 
-            //nom_cliente_txt.setText(nomCliente);
+            nomCliente = rs.getString("nom_cl");
+            telCliente = rs.getString("tel_cl");
+            dirCliente = rs.getString("dir_cl");
+            corrCliente = rs.getString("corr_cl");
+
+            nom_cliente_txt.setText(nomCliente);
+            tel_txt.setText(telCliente);
+            dir_txt.setText(dirCliente);
+            corr_txt.setText(corrCliente);
 
         } catch(SQLException err) {
             JOptionPane.showMessageDialog(null, err.toString());

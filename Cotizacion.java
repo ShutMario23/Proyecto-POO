@@ -944,7 +944,14 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} else if (evt.getSource() == this.anti_txt) {
 			try {
 				this.anti_txt.setBackground(gray);
-				//Double abr = Double.parseDouble(this.tot_txt.getText())*0.5;
+				if (Double.parseDouble(this.anti_txt.getText()) == 0 ){
+					Double pago = Double.parseDouble(this.tot_txt.getText()) - Double.parseDouble(this.anti_txt.getText());
+					Double pendiente;
+					pendiente = pago;
+					Redondear(pendiente, 2);
+					pend_txt.setText(pendiente.toString());
+					pend_txt.setEditable(false);
+				}
 				if (Double.parseDouble(this.anti_txt.getText()) < 0)  {
 					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo negativo", "Error", JOptionPane.ERROR_MESSAGE);
 					anti_txt.setText("");
@@ -1144,12 +1151,9 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 				prod_com.removeAllItems();
 					try {
 						rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
-						Integer x = 0;
 						while(rs.next()) {
 							prod_com.addItem(rs.getString("nom_prod"));
-							x++;
 						}
-						System.out.println(x);
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
 					}
