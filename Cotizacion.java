@@ -689,6 +689,13 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
 					}
+					id_prod_txt.setText("");
+					diseno_txt.setText("");
+					dim_largo.setText("0");
+					dim_ancho.setText("0");
+					cant_txt.setText("1");
+					sbtotal_txt.setText("0");
+					
 					mostrarCot.setVisible(true);
 					agregarCot.setVisible(false);
 				} catch(NumberFormatException err) {
