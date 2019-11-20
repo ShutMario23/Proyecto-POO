@@ -415,7 +415,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     public void actionPerformed(ActionEvent evt){
         if (evt.getSource() == this.salir){
             try {
-                String camposRecibo = "'" + id.toString() + "', '" + idProd.toString() + "', '" + idCliente.toString() +  "', '" + idEmpleado.toString() + "', '" + id + "'";
+                String camposRecibo = "'" + id.toString() + "', '" + idProd.toString() + "', '" + idCliente.toString() +  "', '" + idEmpleado.toString() + "', '" + id.toString() + "'";
 				st.executeUpdate("INSERT INTO Recibo (id_rec, id_prod, id_cl, id_emp, id_cot)" +
                 " VALUES (" + camposRecibo + ")");
                 db.desconectar();
