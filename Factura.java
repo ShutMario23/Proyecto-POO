@@ -12,20 +12,24 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     private Color blue3= new Color(0, 220, 220);
     private Color blue4 = new Color(0, 243, 243);
     private Color bluefocus = new Color(167, 255, 255);
-	  private Color white = new Color(255, 255, 255);
-	  private Color black = new Color(0, 0, 0);
+	private Color white = new Color(255, 255, 255);
+	private Color black = new Color(0, 0, 0);
     private Color gray = new Color(224, 224, 224);
     private Calendar fecha;
     private String dia, mes, anio;
     private JLabel logo, nom_dueno, RFC_dueno, dir_em, tel_em, id_fac, fechaLabel, nom_cliente, dir, tel, corr, head_tabla, sbt, iva, total, sbt_txt, iva_txt, total_txt;
+    private JLabel atendido_txt, nom_cliente_txt, dir_txt, tel_txt, corr_txt, fecha_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar;
     private Conexion db;
   	private Statement st;
-  	private ResultSet rs;
+    private ResultSet rs, rs2;
+    private Integer id;
+    private String idRecibo, idCliente, idEmpleado, idProd;
+      
 
-    public Factura (String title) {
+    public Factura (String title, String idRecibo, String idCliente, String idEmpleado) {
         this.setLayout(null);
         this.setResizable(false);
         this.setBounds(0, 0, 561, 726); //X27
@@ -37,19 +41,22 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         this.addWindowListener(this);
 
         //Iniciamos la conexion a la db
-    		db = new Conexion();
-    		try {
-    			db.conectar();
-          st = db.getConexion().createStatement();
-    		} catch (SQLException e) {
+    	db = new Conexion();
+    	try {
+    		db.conectar();
+            st = db.getConexion().createStatement();
+            rs = st.executeQuery("SELECT MAX(id_fac) FROM Factura");
+            rs.next();
+            id = rs.getInt(1) + 1; //Maxima id de Factura
+    	} catch (SQLException e) {
     			JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    		}
+    	}
 
         //obtenemos fecha actual
-    		fecha = Calendar.getInstance();
-    		dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
-    		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-    		anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+    	fecha = Calendar.getInstance();
+    	dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
+        mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
+        anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
 
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
@@ -93,28 +100,52 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         add(fechaLabel);
 
         nom_cliente = new JLabel("<html><b>Receptor: </b></html>");
-        nom_cliente.setBounds(30, 130, 300, 15);
+        nom_cliente.setBounds(30, 130, 70, 15);
         nom_cliente.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         nom_cliente.setForeground(black);
         add(nom_cliente);
 
+        nom_cliente_txt = new JLabel();
+        nom_cliente_txt.setBounds(90, 130, 180, 15);
+        nom_cliente_txt.setFont( new Font("Microsoft New Tai Lue", 0, 11));
+        nom_cliente_txt.setForeground(black);
+        add(nom_cliente_txt);
+
         tel = new JLabel("<html><b>Tel\u00E9fono: </b></html>");
-        tel.setBounds(350, 130, 100, 15);
+        tel.setBounds(350, 130, 60, 15);
         tel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         tel.setForeground(black);
         add(tel);
 
+        tel_txt = new JLabel();
+        tel_txt.setBounds(410, 130, 500, 15);
+        tel_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        tel_txt.setForeground(black);
+        add(tel_txt);
+
         dir = new JLabel("<html><b>Direcci\u00F3n: </b></html>");
-        dir.setBounds(30, 148, 500, 15);
+        dir.setBounds(30, 148, 60, 15);
         dir.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         dir.setForeground(black);
         add(dir);
 
+        dir_txt = new JLabel();
+        dir_txt.setBounds(90, 148, 390, 15);
+        dir_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        dir_txt.setForeground(black);
+        add(dir_txt);
+
         corr = new JLabel("<html><b>Correo electr\u00F3nico: </b></html>");
-        corr.setBounds(30, 166, 300, 15);
+        corr.setBounds(30, 166, 110, 15);
         corr.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         corr.setForeground(black);
         add(corr);
+
+        corr_txt = new JLabel("Correo electr\u00F3nico: ");
+        corr_txt.setBounds(140, 166, 300, 15);
+        corr_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+        corr_txt.setForeground(black);
+        add(corr_txt);
 
         head_tabla = new JLabel("Id     Nombre                     Tipo                P. Unitario   Dise\u00F1o      Largo     Ancho    Cantidad   Precio total");
         head_tabla.setBounds(31, 191, 500, 15);
@@ -136,22 +167,22 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         tabla.getTableHeader().setResizingAllowed(false);
         tabla.getColumnModel().getColumn(0).setMinWidth(25); //Id
         tabla.getColumnModel().getColumn(0).setMaxWidth(25);
-        tabla.getColumnModel().getColumn(1).setMinWidth(100); //Nombre
-        tabla.getColumnModel().getColumn(1).setMaxWidth(100);
-        tabla.getColumnModel().getColumn(2).setMinWidth(70); //Tipo
-        tabla.getColumnModel().getColumn(2).setMaxWidth(70);
-        tabla.getColumnModel().getColumn(3).setMinWidth(60); //Precio unitario
-        tabla.getColumnModel().getColumn(3).setMaxWidth(60);
-        tabla.getColumnModel().getColumn(4).setMinWidth(50); //Diseño
-        tabla.getColumnModel().getColumn(4).setMaxWidth(50);
-        tabla.getColumnModel().getColumn(5).setMinWidth(40); //Largo
-        tabla.getColumnModel().getColumn(5).setMaxWidth(40);
-        tabla.getColumnModel().getColumn(6).setMinWidth(40); //Ancho
-        tabla.getColumnModel().getColumn(6).setMaxWidth(40);
-        tabla.getColumnModel().getColumn(7).setMinWidth(50); //Cantidad
-        tabla.getColumnModel().getColumn(7).setMaxWidth(50);
-        tabla.getColumnModel().getColumn(8).setMinWidth(60); //Precio total
-        tabla.getColumnModel().getColumn(8).setMaxWidth(60);
+        tabla.getColumnModel().getColumn(1).setMinWidth(160); //Nombre
+        tabla.getColumnModel().getColumn(1).setMaxWidth(160);
+        tabla.getColumnModel().getColumn(2).setMinWidth(60); //Tipo
+        tabla.getColumnModel().getColumn(2).setMaxWidth(60);
+        tabla.getColumnModel().getColumn(3).setMinWidth(55); //Precio unitario
+        tabla.getColumnModel().getColumn(3).setMaxWidth(55);
+        tabla.getColumnModel().getColumn(4).setMinWidth(40); //Diseño
+        tabla.getColumnModel().getColumn(4).setMaxWidth(40);
+        tabla.getColumnModel().getColumn(5).setMinWidth(30); //Largo
+        tabla.getColumnModel().getColumn(5).setMaxWidth(30);
+        tabla.getColumnModel().getColumn(6).setMinWidth(35); //Ancho
+        tabla.getColumnModel().getColumn(6).setMaxWidth(35);
+        tabla.getColumnModel().getColumn(7).setMinWidth(35); //Cantidad
+        tabla.getColumnModel().getColumn(7).setMaxWidth(35);
+        tabla.getColumnModel().getColumn(8).setMinWidth(55); //Precio total
+        tabla.getColumnModel().getColumn(8).setMaxWidth(55);
         tabla.setRowHeight(15);
         tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 10));
         tabla.getTableHeader().setForeground(white);
@@ -160,7 +191,45 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         tabla.setForeground(black);
         tabla.setFont(new Font("Microsoft New Tai Lue", 0, 10));
 
-        //Haz la connexion, y llena la tabla aqui
+        //Conexión con Carrito
+        String idProducto ="";
+        String nomProducto = "";
+        String tipoProducto = "";
+        String diseProducto = "";
+        String larProducto = "";
+        String anchProducto = "";
+        String cantProducto = "";
+        Double preuProducto, pretProducto;
+
+        try {
+            rs = st.executeQuery("SELECT * FROM Carrito WHERE id_cot = '" + idRecibo +"'");
+            while(rs.next()){
+
+                idProducto = rs.getString("id_prod");
+                diseProducto = rs.getString("dis_prod");
+                larProducto = rs.getString("largo_prod");
+                anchProducto = rs.getString("ancho_prod");
+                cantProducto = rs.getString("cant_prod");
+                pretProducto = rs.getDouble("subt_prod");
+
+                rs2 = st.executeQuery("SELECT * FROM Producto WHERE id_prod = '" + idProducto + "'");
+                rs2.next();
+
+                idProd = idProducto;
+
+                nomProducto = rs2.getString("nom_prod");
+                tipoProducto = rs2.getString("tipo_prod");
+                preuProducto = rs2.getDouble("prec_prod");
+
+                Redondear(pretProducto, 2); 
+                Redondear(preuProducto, 2);
+
+                modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, preuProducto.toString(), diseProducto, larProducto, anchProducto, cantProducto, pretProducto.toString()});
+                
+            }
+        } catch (SQLException err) {
+            JOptionPane.showMessageDialog(null, err);
+        }
 
         int rowcount;
         rowcount = tabla.getRowCount()*15;
@@ -176,7 +245,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
 
         sbt = new JLabel("Subtotal: ");
         sbt.setBounds(380, posy + 25, 60, 15);
-        sbt.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+        sbt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         sbt.setForeground(black);
         add(sbt);
 
@@ -188,7 +257,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
 
         iva = new JLabel("IVA 16 \u0025: ");
         iva.setBounds(380, posy + 44, 60, 15);
-        iva.setFont(new Font("Microsoft New Tai Lue", 1, 11));
+        iva.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         iva.setForeground(black);
         add(iva);
 
@@ -200,7 +269,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
 
         total = new JLabel("Total: ");
         total.setBounds(380, posy + 62, 60, 15);
-        total.setFont(new Font("Microsoft New Tai Lue", 1,11));
+        total.setFont(new Font("Microsoft New Tai Lue", 0, 11));
         total.setForeground(black);
         add(total);
 
@@ -211,7 +280,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         add(total_txt);
 
         salir = new JButton("Salir");
-        salir.setBounds(127, 630, 90, 25);
+        salir.setBounds(235, 630, 90, 25);
         salir.setFont(new Font("Microsoft New Tai Lue", 1, 14));
         salir.setBackground(blue);
         salir.setForeground(white);
@@ -220,24 +289,73 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         salir.addMouseListener(this);
         add(salir);
 
-        guardar = new JButton("Guardar");
-        guardar.setBounds(344, 630, 90, 25);
-        guardar.setFont(new Font("Microsoft New Tai Lue", 1, 14));
-        guardar.setBackground(blue);
-        guardar.setForeground(white);
-        guardar.addActionListener(this);
-        guardar.addFocusListener(this);
-        guardar.addMouseListener(this);
-        add(guardar);
+        String nomEmpleado = "";
+        String nomCliente = "";
+        String telCliente = "";
+		String dirCliente = "";
+        String corrCliente = "";
+        Double subRec, ivaRec, totRec;
+
+        try {
+            //Llamanod los datos del Empelado
+            rs = st.executeQuery("SELECT nom_emp FROM Empleado WHERE id_emp = '" + idEmpleado + "'");
+            rs.next();
+
+            nomEmpleado = rs.getString("nom_emp");
+            atendido_txt.setText(nomEmpleado);
+
+            //Lamando los datos de Cotizacion
+            rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + idRecibo + "'");
+            rs.next();
+
+            subRec = rs.getDouble("sub_cot");
+            ivaRec = rs.getDouble("iva_cot");
+            totRec = rs.getDouble("tot_cot");
+
+            Redondear(subRec, 2); sbt_txt.setText(subRec.toString());
+            Redondear(ivaRec, 2); iva_txt.setText(ivaRec.toString());
+            Redondear(totRec, 2); total_txt.setText(totRec.toString());
+
+            //Obtenemos los datos del cliente
+            rs = st.executeQuery("SELECT * FROM Cliente WHERE id_cl = '" + idCliente + "'");
+            rs.next();
+
+            nomCliente = rs.getString("nom_cl");
+            telCliente = rs.getString("tel_cl");
+            dirCliente = rs.getString("dir_cl");
+            corrCliente = rs.getString("corr_cl");
+
+            nom_cliente_txt.setText(nomCliente);
+            tel_txt.setText(telCliente);
+            dir_txt.setText(dirCliente);
+            corr_txt.setText(corrCliente);
+
+        } catch(SQLException err) {
+            JOptionPane.showMessageDialog(null, err.toString());
+        }
     }
+
+    public static double Redondear(double numero,int digitos) {
+        int cifras=(int) Math.pow(10,digitos);
+        return Math.rint(numero*cifras)/cifras;
+    }
+
 
     //Botones
     @Override
     public void actionPerformed(ActionEvent evt){
         if (evt.getSource() == salir){
-            Menu menu = new Menu("Men\u00FA");
-            menu.setVisible(true);
-            this.setVisible(false);
+            try {
+                String camposFactura = "'" + id + "', '" + idProd + "', '" + idCliente +  "', '" + idEmpleado + "', '" + idRecibo + "'";
+				st.executeUpdate("INSERT INTO Factura (id_rec, id_prod, id_cl, id_emp, id_cot)" +
+                " VALUES (" + camposFactura + ")");
+                db.desconectar();
+                Menu menu = new Menu("Men\u00FA");
+                menu.setVisible(true);
+                this.setVisible(false);
+            } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

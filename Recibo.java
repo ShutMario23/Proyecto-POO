@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.Calendar;
+
 import javax.swing.table.*;
 
 public class Recibo extends JFrame implements ActionListener, FocusListener, MouseListener, WindowListener {
@@ -19,15 +20,15 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     private String dia, mes, anio;
     private JLabel logo, dir_em, tel_em, id_rec, fechaLabel, atendido, nom_cliente, dir, tel, corr, head_tabla;
     private JLabel sbt, iva, total, sbt_txt, iva_txt, total_txt, anti, anti_txt, pend, pend_txt, firma, linea_f, firma_c, linea_c;
-    private JLabel atendido_txt, nom_cliente_txt, dir_txt, tel_txt, corr_txt;
+    private JLabel atendido_txt, nom_cliente_txt, dir_txt, tel_txt, corr_txt, fecha_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
-    private JButton salir, guardar, factura;
+    private JButton salir, factura;
     private Conexion db;
   	private Statement st;
-    private ResultSet rs;
+    private ResultSet rs, rs2;
     private Integer id;
-    private String idCliente, idEmpleado;
+    private String idCliente, idEmpleado, idProd;
 
     public Recibo (String title, String idCliente, String idEmpleado) {
         this.setLayout(null);
@@ -45,9 +46,9 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     	try {
     		db.conectar();
             st = db.getConexion().createStatement();
-            rs = st.executeQuery("SELECT MAX(id_rec) FROM Recibo");
+            rs = st.executeQuery("SELECT MAX(id_cot) FROM Cotizacion");
             rs.next();
-            id = rs.getInt(1) + 1; //Maxima id de Recibo
+            id = rs.getInt(1); //Maxima id de Recibo
     	} catch (SQLException e) {
     		    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
     	}
@@ -56,7 +57,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     	fecha = Calendar.getInstance();
         dia = Integer.valueOf(fecha.get(Calendar.DATE)).toString();
 		mes = Integer.valueOf(fecha.get(Calendar.MONTH) + 1).toString();
-    	anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
+        anio = Integer.valueOf(fecha.get(Calendar.YEAR)).toString();
 
         ImageIcon logo_image = new ImageIcon("./images/logo-fac.png");
         logo = new JLabel(logo_image);
@@ -82,11 +83,17 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         id_rec.setForeground(black);
         add(id_rec);
 
-        fechaLabel = new JLabel("Fecha:     " + dia + "/" + mes + "/" + anio);
+        fechaLabel = new JLabel("Fecha: ");
     	fechaLabel.setBounds(410, 45, 152, 15);
     	fechaLabel.setFont(new Font("Microsoft New Tai Lue", 0, 11));
 		fechaLabel.setForeground(black);
         add(fechaLabel);
+
+        fecha_txt = new JLabel(dia + "/" + mes + "/" + anio);
+        fecha_txt.setBounds(455, 45, 152, 15);
+    	fecha_txt.setFont(new Font("Microsoft New Tai Lue", 0, 11));
+		fecha_txt.setForeground(black);
+        add(fecha_txt);
 
         atendido = new JLabel("Atendido Por: ");
         atendido.setBounds(30, 115, 100, 15);
@@ -148,7 +155,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         corr_txt.setForeground(black);
         add(corr_txt);
 
-        head_tabla = new JLabel("Id     Nombre                     Tipo                P. Unitario   Dise\u00F1o      Largo     Ancho    Cantidad   Precio total");
+        head_tabla = new JLabel("Id     Nombre                                         Tipo             P. Unitario  Dise\u00F1o  Largo  Ancho  Cant    P. total");
         head_tabla.setBounds(31, 191, 500, 15);
         head_tabla.setFont(new Font("Microsoft New Tai Lue", 1 ,10));
         head_tabla.setForeground(black);
@@ -168,22 +175,22 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         tabla.getTableHeader().setResizingAllowed(false);
         tabla.getColumnModel().getColumn(0).setMinWidth(25); //Id
         tabla.getColumnModel().getColumn(0).setMaxWidth(25);
-        tabla.getColumnModel().getColumn(1).setMinWidth(100); //Nombre
-        tabla.getColumnModel().getColumn(1).setMaxWidth(100);
-        tabla.getColumnModel().getColumn(2).setMinWidth(70); //Tipo
-        tabla.getColumnModel().getColumn(2).setMaxWidth(70);
-        tabla.getColumnModel().getColumn(3).setMinWidth(60); //Precio unitario
-        tabla.getColumnModel().getColumn(3).setMaxWidth(60);
-        tabla.getColumnModel().getColumn(4).setMinWidth(50); //Diseño
-        tabla.getColumnModel().getColumn(4).setMaxWidth(50);
-        tabla.getColumnModel().getColumn(5).setMinWidth(40); //Largo
-        tabla.getColumnModel().getColumn(5).setMaxWidth(40);
-        tabla.getColumnModel().getColumn(6).setMinWidth(40); //Ancho
-        tabla.getColumnModel().getColumn(6).setMaxWidth(40);
-        tabla.getColumnModel().getColumn(7).setMinWidth(50); //Cantidad
-        tabla.getColumnModel().getColumn(7).setMaxWidth(50);
-        tabla.getColumnModel().getColumn(8).setMinWidth(60); //Precio total
-        tabla.getColumnModel().getColumn(8).setMaxWidth(60);
+        tabla.getColumnModel().getColumn(1).setMinWidth(160); //Nombre
+        tabla.getColumnModel().getColumn(1).setMaxWidth(160);
+        tabla.getColumnModel().getColumn(2).setMinWidth(60); //Tipo
+        tabla.getColumnModel().getColumn(2).setMaxWidth(60);
+        tabla.getColumnModel().getColumn(3).setMinWidth(55); //Precio unitario
+        tabla.getColumnModel().getColumn(3).setMaxWidth(55);
+        tabla.getColumnModel().getColumn(4).setMinWidth(40); //Diseño
+        tabla.getColumnModel().getColumn(4).setMaxWidth(40);
+        tabla.getColumnModel().getColumn(5).setMinWidth(30); //Largo
+        tabla.getColumnModel().getColumn(5).setMaxWidth(30);
+        tabla.getColumnModel().getColumn(6).setMinWidth(35); //Ancho
+        tabla.getColumnModel().getColumn(6).setMaxWidth(35);
+        tabla.getColumnModel().getColumn(7).setMinWidth(35); //Cantidad
+        tabla.getColumnModel().getColumn(7).setMaxWidth(35);
+        tabla.getColumnModel().getColumn(8).setMinWidth(55); //Precio total
+        tabla.getColumnModel().getColumn(8).setMaxWidth(55);
         tabla.setRowHeight(15);
         tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 10));
         tabla.getTableHeader().setForeground(white);
@@ -192,33 +199,41 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         tabla.setForeground(black);
         tabla.setFont(new Font("Microsoft New Tai Lue", 0, 10));
 
+        //Conexión con Carrito
         String idProducto ="";
         String nomProducto = "";
         String tipoProducto = "";
-        String preuProducto = "";
         String diseProducto = "";
         String larProducto = "";
         String anchProducto = "";
         String cantProducto = "";
-        String pretProducto = "";
+        Double preuProducto, pretProducto;
 
-        //Haz la connexion, y llena la tabla aqui
         try {
             rs = st.executeQuery("SELECT * FROM Carrito WHERE id_cot = '" + id +"'");
-            Integer y = 0;
             while(rs.next()){
+
                 idProducto = rs.getString("id_prod");
-                // nomProducto = rs.getString("nom_prod");
-                // tipoProducto = rs.getString("tipo_prod");
-                // preuProducto = rs.getString("prec_prod");
                 diseProducto = rs.getString("dis_prod");
                 larProducto = rs.getString("largo_prod");
                 anchProducto = rs.getString("ancho_prod");
                 cantProducto = rs.getString("cant_prod");
-                pretProducto = rs.getString("subt_prod");
+                pretProducto = rs.getDouble("subt_prod");
 
-                y++;
-                modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, preuProducto, diseProducto, larProducto, anchProducto, cantProducto, pretProducto});
+                rs2 = st.executeQuery("SELECT * FROM Producto WHERE id_prod = '" + idProducto + "'");
+                rs2.next();
+
+                idProd = idProducto;
+
+                nomProducto = rs2.getString("nom_prod");
+                tipoProducto = rs2.getString("tipo_prod");
+                preuProducto = rs2.getDouble("prec_prod");
+
+                Redondear(pretProducto, 2); 
+                Redondear(preuProducto, 2);
+
+                modelo.addRow(new String[]{idProducto, nomProducto, tipoProducto, preuProducto.toString(), diseProducto, larProducto, anchProducto, cantProducto, pretProducto.toString()});
+                
             }
         } catch (SQLException err) {
             JOptionPane.showMessageDialog(null, err);
@@ -321,7 +336,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         add(linea_f);
 
         salir = new JButton("Salir");
-        salir.setBounds(72, 650, 90, 25);
+        salir.setBounds(127, 650, 90, 25);
         salir.setFont(new Font("Microsoft New Tai Lue", 1, 14));
         salir.setBackground(blue);
         salir.setForeground(white);
@@ -330,18 +345,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         salir.addMouseListener(this);
         add(salir);
 
-        guardar = new JButton("Guardar");
-        guardar.setBounds(232, 650, 90, 25);
-        guardar.setFont(new Font("Microsoft New Tai Lue", 1, 14));
-        guardar.setBackground(blue);
-        guardar.setForeground(white);
-        guardar.addActionListener(this);
-        guardar.addFocusListener(this);
-        guardar.addMouseListener(this);
-        add(guardar);
-
         factura = new JButton("Factura");
-        factura.setBounds(394, 650, 90, 25);
+        factura.setBounds(344, 650, 90, 25);
         factura.setFont(new Font("Microsoft New Tai Lue", 1, 14));
         factura.setBackground(blue);
         factura.setForeground(white);
@@ -408,14 +413,30 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     //Botones
     @Override
     public void actionPerformed(ActionEvent evt){
-        if (evt.getSource() == salir){
-            Menu menu = new Menu("Men\u00FA");
-            menu.setVisible(true);
-            this.setVisible(false);
-        } else if (evt.getSource() == factura){
-            Factura f1 = new Factura("Factura");
-            f1.setVisible(true);
-            this.setVisible(false);
+        if (evt.getSource() == this.salir){
+            try {
+                String camposRecibo = "'" + id.toString() + "', '" + idProd.toString() + "', '" + idCliente.toString() +  "', '" + idEmpleado.toString() + "', '" + id + "'";
+				st.executeUpdate("INSERT INTO Recibo (id_rec, id_prod, id_cl, id_emp, id_cot)" +
+                " VALUES (" + camposRecibo + ")");
+                db.desconectar();
+                Menu menu = new Menu("Men\u00FA");
+                menu.setVisible(true);
+                this.setVisible(false);
+            } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (evt.getSource() == this.factura){
+            try {
+                String camposRecibo = "'" + id.toString() + "', '" + idProd.toString() + "', '" + idCliente.toString() +  "', '" + idEmpleado.toString() + "', '" + id.toString() + "'";
+				st.executeUpdate("INSERT INTO Recibo (id_rec, id_prod, id_cl, id_emp, id_cot)" +
+                " VALUES (" + camposRecibo + ")");
+                db.desconectar();
+                Factura f1 = new Factura("Factura", id.toString(), idCliente, idEmpleado);
+                f1.setVisible(true);
+                this.setVisible(false);
+            } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -425,9 +446,6 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         if(evt.getSource() == this.salir){
             this.salir.setBackground(bluefocus);
             this.salir.setForeground(black);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(bluefocus);
-            this.guardar.setForeground(black);
         } else if (evt.getSource() == this.factura){
             this.factura.setBackground(bluefocus);
             this.factura.setForeground(black);
@@ -439,9 +457,6 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         if(evt.getSource() == this.salir){
             this.salir.setBackground(blue);
             this.salir.setForeground(white);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(blue);
-            this.guardar.setForeground(white);
         } else if (evt.getSource() == this. factura){
             this.factura.setBackground(blue);
             this.factura.setForeground(white);
@@ -464,9 +479,6 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
         if(evt.getSource() == this.salir){
             this.salir.setBackground(blue);
             this.salir.setForeground(white);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(blue);
-            this.guardar.setForeground(white);
         } else if (evt.getSource() == this. factura){
             this.factura.setBackground(blue);
             this.factura.setForeground(white);
@@ -477,16 +489,11 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     public void mouseEntered(MouseEvent evt) {
         this.salir.setBackground(blue);
         this.salir.setForeground(white);
-        this.guardar.setBackground(blue);
-        this.guardar.setForeground(white);
         this.factura.setBackground(blue);
         this.factura.setForeground(white);
         if(evt.getSource() == this.salir){
             this.salir.setBackground(bluefocus);
             this.salir.setForeground(black);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(bluefocus);
-            this.guardar.setForeground(black);
         } else if (evt.getSource() == this.factura){
             this.factura.setBackground(bluefocus);
             this.factura.setForeground(black);

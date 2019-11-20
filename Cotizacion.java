@@ -689,13 +689,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
 					}
-					id_prod_txt.setText("");
-					diseno_txt.setText("");
-					dim_largo.setText("0");
-					dim_ancho.setText("0");
-					cant_txt.setText("1");
-					sbtotal_txt.setText("0");
-					
 					mostrarCot.setVisible(true);
 					agregarCot.setVisible(false);
 				} catch(NumberFormatException err) {
@@ -951,14 +944,6 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 		} else if (evt.getSource() == this.anti_txt) {
 			try {
 				this.anti_txt.setBackground(gray);
-				if (Double.parseDouble(this.anti_txt.getText()) == 0 ){
-					Double pago = Double.parseDouble(this.tot_txt.getText()) - Double.parseDouble(this.anti_txt.getText());
-					Double pendiente;
-					pendiente = pago;
-					Redondear(pendiente, 2);
-					pend_txt.setText(pendiente.toString());
-					pend_txt.setEditable(false);
-				}
 				if (Double.parseDouble(this.anti_txt.getText()) < 0)  {
 					JOptionPane.showMessageDialog(null, "No se puede dar un anticipo negativo", "Error", JOptionPane.ERROR_MESSAGE);
 					anti_txt.setText("");
@@ -1158,16 +1143,18 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 				prod_com.removeAllItems();
 					try {
 						rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
+						Integer x = 0;
 						while(rs.next()) {
 							prod_com.addItem(rs.getString("nom_prod"));
+							x++;
 						}
+						System.out.println(x);
 					} catch(SQLException err) {
 						JOptionPane.showMessageDialog(null, err);
 					}
        	  	}
        	} else if(evt.getSource() == this.prod_com) {
 			if(evt.getStateChange() == 1) {
-				
 				try {
 					try {
 						rs = st.executeQuery("SELECT nom_prod FROM Producto WHERE tipo_prod = '" + tipoProducto + "'");
@@ -1182,6 +1169,7 @@ public class Cotizacion extends JFrame implements ActionListener, KeyListener, F
 						JOptionPane.showMessageDialog(null, err);
 					}
 					// Se consulta la id y precio del producto seleccionado
+					nomProducto = prod_com.getSelectedItem().toString();
 					rs = st.executeQuery("SELECT id_prod, prec_prod FROM Producto WHERE nom_prod = '" + nomProducto + "'");
 					rs.next();
 
