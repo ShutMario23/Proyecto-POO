@@ -16,7 +16,7 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
     private Color gray = new Color(224, 224, 224);
     private JPanel mostrarResultados, agregarProducto;
     private JLabel tira, tira2, tira3, tira4, rights;
-    private JLabel consulta, busqueda, por, ordenado, agreProducto, id_prod, nombre, tipo, precio, cantidad;
+    private JLabel consulta, busqueda, por, ordenado, agreProducto, id_prod, nombre, tipo, precio, cantidad, resultados;
     private JTextField consulta_txt, id_txt, nombre_txt, tipo_txt, precio_txt, cantidad_txt;
     private JButton buscar, filtros, agregar, cancelar, eliminar, guardar, regresar;
     private JComboBox<String> por_cb, ordenado_cb, asce_desce;
@@ -26,7 +26,7 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
     private Conexion db;
     private Statement st;
     private ResultSet rs;
-    private Integer id;
+    String consultaProducto, tipoProducto, ordenProducto, tipoOrden;
 
     public Producto(String title) {// constructor
         this.setLayout(null);
@@ -54,18 +54,14 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         agregarProducto.setVisible(false);
 
         //iniciamos conexion a la db
-		db = new Conexion();
-		try {
-			db.conectar();
-			st = db.getConexion().createStatement();
-
-			rs = st.executeQuery("SELECT MAX(id_prod) FROM Producto");
-			rs.next();
-			id = rs.getInt(1); //maxima id de Productos + 1
-		} catch(SQLException err) {
-			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+    		db = new Conexion();
+    		try {
+    			db.conectar();
+    			st = db.getConexion().createStatement();
+    		} catch(SQLException err) {
+          JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
         //Panel Mostrar
         tira = new JLabel();
         tira.setBounds(0, 0, 810, 20);
@@ -112,6 +108,13 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         consulta.setFont(new Font("Microsoft New Tai Lue", 0, 18));
         mostrarResultados.add(consulta);
 
+        resultados = new JLabel("No se han encontrado resultados para esta b\u00FAsqueda.");
+        resultados.setBounds(200, 350, 500, 25);
+        resultados.setForeground(new Color(0, 0, 0));
+        resultados.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+        resultados.setVisible(false);
+        mostrarResultados.add(resultados);
+
         consulta_txt = new JTextField();
         consulta_txt.setBounds(152, 117, 200, 30);
         consulta_txt.setBackground(new Color(224, 224, 224));
@@ -130,6 +133,11 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         por_cb.setBounds(436, 117, 200, 30);
         por_cb.setForeground(new Color(0, 0, 0));
         por_cb.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+        por_cb.addItem("Id producto");
+        por_cb.addItem("Id proveedor");
+        por_cb.addItem("Producto");
+        por_cb.addItem("Precio");
+        por_cb.addItem("Tipo");
         por_cb.addFocusListener(this);
         mostrarResultados.add(por_cb);
 
@@ -143,6 +151,11 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         ordenado_cb.setBounds(203, 163, 200, 30);
         ordenado_cb.setForeground(new Color(0, 0, 0));
         ordenado_cb.setFont(new Font("Microsoft New Tai Lue", 0, 18));
+        ordenado_cb.addItem("Id producto");
+        ordenado_cb.addItem("Id proveedor");
+        ordenado_cb.addItem("Producto");
+        ordenado_cb.addItem("Precio");
+        ordenado_cb.addItem("Tipo");
         ordenado_cb.addFocusListener(this);
         mostrarResultados.add(ordenado_cb);
 
@@ -151,6 +164,8 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         asce_desce.setForeground(new Color(0, 0, 0));
         asce_desce.setFont(new Font("Microsoft New Tai Lue", 0, 18));
         asce_desce.addFocusListener(this);
+        asce_desce.addItem("Ascendente");
+        asce_desce.addItem("Descendente");
         mostrarResultados.add(asce_desce);
 
         buscar = new JButton("Buscar");
@@ -200,7 +215,7 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         agregar.addMouseListener(this);
         mostrarResultados.add(agregar);
 
-        String[] header = new String[] { "Id", "Nombre", "Precio", "Tipo", "Cantidad" };
+        String[] header = new String[] { "Id", "Id proveedor", "Nombre", "Precio", "Tipo"};
         modelo = new DefaultTableModel(null, header);
         tabla = new JTable(modelo){
             @Override
@@ -213,18 +228,18 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
         scroll = new JScrollPane(tabla);
         scroll.setBounds(30, 207, 745, 300);
         tabla.getColumnModel().getColumn(0).setPreferredWidth(25); //Id
-		tabla.getColumnModel().getColumn(1).setPreferredWidth(200); //Nombre
-		tabla.getColumnModel().getColumn(2).setPreferredWidth(70); //Precio
-		tabla.getColumnModel().getColumn(3).setPreferredWidth(95); //Tipo
-        tabla.getColumnModel().getColumn(4).setPreferredWidth(70); //Cantidad
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(55); //Id proveedor
+    		tabla.getColumnModel().getColumn(2).setPreferredWidth(250); //Nombre
+    		tabla.getColumnModel().getColumn(3).setPreferredWidth(70); //Precio
+    		tabla.getColumnModel().getColumn(4).setPreferredWidth(95); //Tipo
         tabla.setRowHeight(25);
-		tabla.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16)); 
-		tabla.getTableHeader().setForeground(white); 
-		tabla.getTableHeader().setBackground(blue); 
-		tabla.setBackground(white);
-		tabla.setForeground(black);
-		tabla.setFont(new Font("Microsoft New Tai Lue", 0, 14));
+    		tabla.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+    		tabla.getTableHeader().setFont(new Font("Microsoft New Tai Lue", 1, 16));
+    		tabla.getTableHeader().setForeground(white);
+    		tabla.getTableHeader().setBackground(blue);
+    		tabla.setBackground(white);
+    		tabla.setForeground(black);
+    		tabla.setFont(new Font("Microsoft New Tai Lue", 0, 14));
         mostrarResultados.add(scroll);
 
         //Visualizar Paneles
@@ -378,6 +393,117 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
             Menu m = new Menu("Men\u00FA");
             m.setVisible(true);
             this.setVisible(false);
+        } else if(evt.getSource() == this.buscar) {
+          consultaProducto = consulta_txt.getText();
+          if(consultaProducto.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Debe de llenar todos los campos.");
+          } else {
+            int rowCount = modelo.getRowCount();
+            if(rowCount != 0) {
+              //Remove rows one by one from the end of the table
+              //https://stackoverflow.com/questions/6232355/deleting-all-the-rows-in-a-jtable
+              for (int i = rowCount - 1; i >= 0; i--) {
+                  modelo.removeRow(i);
+              }
+            }
+            tipoProducto = por_cb.getSelectedItem().toString();
+            ordenProducto = ordenado_cb.getSelectedItem().toString();
+            tipoOrden = asce_desce.getSelectedItem().toString();
+
+            String campo = "";
+            switch(tipoProducto) {
+              case "Id producto":
+                campo = "id_prod";
+                break;
+              case "Id proveedor":
+                campo = "id_prov";
+                break;
+              case "Producto":
+                campo = "nom_prod";
+                break;
+              case "Precio":
+                campo = "nom_prod";
+                break;
+              case "Tipo":
+                campo = "tipo_prod";
+                break;
+              default:
+                JOptionPane.showMessageDialog(null, "Un error raro :O");
+                break;
+            }
+
+            String orden = "";
+            switch(ordenProducto) {
+              case "Id producto":
+                orden = "id_prod";
+                break;
+              case "Id proveedor":
+                orden = "id_prov";
+                break;
+              case "Producto":
+                orden = "nom_prod";
+                break;
+              case "Precio":
+                orden = "nom_prod";
+                break;
+              case "Tipo":
+                orden = "tipo_prod";
+                break;
+              default:
+                JOptionPane.showMessageDialog(null, "Un error raro :O");
+                break;
+            }
+
+            String tipo = "";
+            switch(tipoOrden) {
+              case "Ascendente":
+                tipo = "ASC";
+                break;
+              case "Descendente":
+                tipo = "DESC";
+                break;
+              default:
+                JOptionPane.showMessageDialog(null, "Un error raro :O");
+                break;
+            }
+
+            try {
+              rs = st.executeQuery("SELECT * FROM Producto WHERE " + campo + " LIKE '" + consultaProducto + "' ORDER BY " + orden + " "
+                                    + tipo);
+              while(rs.next()) {
+                String[] fila = new String[]{rs.getString("id_prod"), rs.getString("id_prov"), rs.getString("nom_prod"),
+                                              rs.getString("prec_prod"), rs.getString("tipo_prod")};
+                modelo.addRow(fila);
+              }
+              int result = modelo.getRowCount();
+              if(result == 0) {
+                resultados.setVisible(true);
+              } else {
+                resultados.setVisible(false);
+              }
+            } catch(SQLException err) {
+              JOptionPane.showMessageDialog(null, err.toString());
+            }
+          }
+        } else if(evt.getSource() == this.filtros) {
+          consulta_txt.setText("");
+          resultados.setVisible(false);
+          int rowCount = modelo.getRowCount();
+          for (int i = rowCount - 1; i >= 0; i--) {
+                modelo.removeRow(i);
+            }
+        } else if(evt.getSource() == this.eliminar) {
+          int column = 0;
+          int row = tabla.getSelectedRow();
+          if(row != -1){ //si no esta vacia la tabla
+            modelo.removeRow(row);
+            String value = tabla.getModel().getValueAt(row, column).toString(); //obtenemos id
+            try {
+              st.executeUpdate("DELETE FROM Producto WHERE id_prod = '" + value + "'");
+            } catch(SQLException err) {
+              JOptionPane.showMessageDialog(null, err.toString());
+            }
+          }
         }
     }
 
@@ -573,18 +699,28 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
 
     @Override
     public void mouseClicked(MouseEvent evt) {
-        
+
 	}
-	
+
 	//WindowListener
 	@Override
 	public void windowClosing(WindowEvent evt) {
-		try {
-			db.desconectar();
-			System.out.println("Se ha desconectado de la base de datos.");
-		} catch (SQLException err) {
-			JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
-		}
+    try {
+      //Actualizamos el estado de sesion de usuario en la db
+      String usuario = "";
+      rs = st.executeQuery("SELECT nom_usu, sesion_act FROM Usuario");
+      while(rs.next()) {
+        if(rs.getString("sesion_act").equals("s")) {
+          usuario = rs.getString("nom_usu");
+          st.executeUpdate("UPDATE Usuario SET sesion_act = 'n' WHERE nom_usu = '" + usuario + "'");
+          break;
+        }
+      }
+      db.desconectar();
+      System.out.println("Se ha desconectado el usuario: " + usuario);
+    } catch (SQLException err) {
+      JOptionPane.showMessageDialog(null, "Error: " + err, "Error", JOptionPane.ERROR_MESSAGE);
+    }
 	}
 
 	@Override
@@ -594,32 +730,32 @@ public class Producto extends JFrame implements ActionListener, KeyListener, Foc
 
 	@Override
 	public void windowActivated(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowIconified(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowClosed(WindowEvent evt) {
-		
+
 	}
 
 	@Override
 	public void windowOpened(WindowEvent evt) {
-		
+
 	}
 
 	//ItemListener
 	@Override
 	public void itemStateChanged(ItemEvent evt) {
-		
+
     }
 }

@@ -28,7 +28,8 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
   	private Statement st;
     private ResultSet rs, rs2;
     private Integer id;
-    private String idCliente, idEmpleado, idProd;
+    private String idCliente, idEmpleado, idProducto;
+    private String idrec, idcl, idemp, idprod, idcot;
 
     public Recibo (String title, String idCliente, String idEmpleado) {
         this.setLayout(null);
@@ -51,7 +52,11 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
             id = rs.getInt(1); //Maxima id de Recibo
     	} catch (SQLException e) {
     		    JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    	}
+        }
+
+        idcot = id.toString();
+        idcl = idCliente;
+        idemp = idEmpleado; 
 
         //obtenemos fecha actual
     	fecha = Calendar.getInstance();
@@ -223,7 +228,7 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
                 rs2 = st.executeQuery("SELECT * FROM Producto WHERE id_prod = '" + idProducto + "'");
                 rs2.next();
 
-                idProd = idProducto;
+                idprod = idProducto;
 
                 nomProducto = rs2.getString("nom_prod");
                 tipoProducto = rs2.getString("tipo_prod");
@@ -413,12 +418,20 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
     //Botones
     @Override
     public void actionPerformed(ActionEvent evt){
+        System.out.println("Se rompe1");
         if (evt.getSource() == this.salir){
             try {
-                String camposRecibo = "'" + id.toString() + "', '" + idProd.toString() + "', '" + idCliente.toString() +  "', '" + idEmpleado.toString() + "', '" + id.toString() + "'";
+                System.out.println("Se rompe2");
+                System.out.println(id);
+                System.out.println(idprod);
+                System.out.println(idcl);
+                System.out.println(idemp);
+                System.out.println(idcot);
+                String camposRecibo = "'" + id + "', '" + idprod + "', '" + idcl +  "', '" + idemp + "', '" + idcot + "'";
 				st.executeUpdate("INSERT INTO Recibo (id_rec, id_prod, id_cl, id_emp, id_cot)" +
                 " VALUES (" + camposRecibo + ")");
                 db.desconectar();
+                System.out.println("Se rompe");
                 Menu menu = new Menu("Men\u00FA");
                 menu.setVisible(true);
                 this.setVisible(false);
@@ -427,12 +440,20 @@ public class Recibo extends JFrame implements ActionListener, FocusListener, Mou
             }
         } else if (evt.getSource() == this.factura){
             try {
-                String camposRecibo = "'" + id.toString() + "', '" + idProd.toString() + "', '" + idCliente.toString() +  "', '" + idEmpleado.toString() + "', '" + id.toString() + "'";
+                System.out.println("Se rompe2");
+                System.out.println(id);
+                System.out.println(idprod);
+                System.out.println(idcl);
+                System.out.println(idemp);
+                System.out.println(idcot);
+                String camposRecibo = "'" + id + "', '" + idprod + "', '" + idcl +  "', '" + idemp + "', '" + idcot + "'";
 				st.executeUpdate("INSERT INTO Recibo (id_rec, id_prod, id_cl, id_emp, id_cot)" +
                 " VALUES (" + camposRecibo + ")");
                 db.desconectar();
-                Factura f1 = new Factura("Factura", id.toString(), idCliente, idEmpleado);
-                f1.setVisible(true);
+                System.out.println("Se rompe");
+                System.out.println(id.toString() + idcl + idemp);
+                Factura fac = new Factura("Factura", id.toString(), idcl.toString(), idemp.toString());
+                fac.setVisible(true);
                 this.setVisible(false);
             } catch (SQLException e) {
                     JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);

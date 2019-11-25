@@ -18,7 +18,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     private Calendar fecha;
     private String dia, mes, anio;
     private JLabel logo, nom_dueno, RFC_dueno, dir_em, tel_em, id_fac, fechaLabel, nom_cliente, dir, tel, corr, head_tabla, sbt, iva, total, sbt_txt, iva_txt, total_txt;
-    private JLabel atendido_txt, nom_cliente_txt, dir_txt, tel_txt, corr_txt, fecha_txt;
+    private JLabel nom_cliente_txt, dir_txt, tel_txt, corr_txt;
     private JTable tabla;
     private DefaultTableModel modelo;
     private JButton salir, guardar;
@@ -26,7 +26,8 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
   	private Statement st;
     private ResultSet rs, rs2;
     private Integer id;
-    private String idRecibo, idCliente, idEmpleado, idProd;
+    private String idRecibo, idCliente, idEmpleado, idProducto;
+    private String idrec, idcl, idemp, idprod;
       
 
     public Factura (String title, String idRecibo, String idCliente, String idEmpleado) {
@@ -50,7 +51,11 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
             id = rs.getInt(1) + 1; //Maxima id de Factura
     	} catch (SQLException e) {
     			JOptionPane.showMessageDialog(null, "Error" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    	}
+        }
+        
+        idrec = idRecibo.toString();
+        idcl = idCliente;
+        idemp = idEmpleado; 
 
         //obtenemos fecha actual
     	fecha = Calendar.getInstance();
@@ -215,7 +220,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
                 rs2 = st.executeQuery("SELECT * FROM Producto WHERE id_prod = '" + idProducto + "'");
                 rs2.next();
 
-                idProd = idProducto;
+                idprod = idProducto;
 
                 nomProducto = rs2.getString("nom_prod");
                 tipoProducto = rs2.getString("tipo_prod");
@@ -296,13 +301,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         String corrCliente = "";
         Double subRec, ivaRec, totRec;
 
-        try {
-            //Llamanod los datos del Empelado
-            rs = st.executeQuery("SELECT nom_emp FROM Empleado WHERE id_emp = '" + idEmpleado + "'");
-            rs.next();
-
-            nomEmpleado = rs.getString("nom_emp");
-            atendido_txt.setText(nomEmpleado);
+        try{
 
             //Lamando los datos de Cotizacion
             rs = st.executeQuery("SELECT * FROM Cotizacion WHERE id_cot = '" + idRecibo + "'");
@@ -346,8 +345,8 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     public void actionPerformed(ActionEvent evt){
         if (evt.getSource() == salir){
             try {
-                String camposFactura = "'" + id + "', '" + idProd + "', '" + idCliente +  "', '" + idEmpleado + "', '" + idRecibo + "'";
-				st.executeUpdate("INSERT INTO Factura (id_rec, id_prod, id_cl, id_emp, id_cot)" +
+                String camposFactura = "'" + id + "', '" + idprod + "', '" + idcl +  "', '" + idemp + "', '" + idrec + "'";
+				st.executeUpdate("INSERT INTO Factura (id_fac, id_prod, id_cl, id_emp, id_rec)" +
                 " VALUES (" + camposFactura + ")");
                 db.desconectar();
                 Menu menu = new Menu("Men\u00FA");
@@ -365,10 +364,7 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         if(evt.getSource() == this.salir){
             this.salir.setBackground(bluefocus);
             this.salir.setForeground(black);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(bluefocus);
-            this.guardar.setForeground(black);
-        }
+        } 
     }
 
     @Override
@@ -376,9 +372,6 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
         if(evt.getSource() == this.salir){
             this.salir.setBackground(blue);
             this.salir.setForeground(white);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(blue);
-            this.guardar.setForeground(white);
         }
 	}
 
@@ -408,15 +401,10 @@ public class Factura extends JFrame implements ActionListener, FocusListener, Mo
     public void mouseEntered(MouseEvent evt) {
         this.salir.setBackground(blue);
         this.salir.setForeground(white);
-        this.guardar.setBackground(blue);
-        this.guardar.setForeground(white);
         if(evt.getSource() == this.salir){
             this.salir.setBackground(bluefocus);
             this.salir.setForeground(black);
-        } else if (evt.getSource() == this.guardar){
-            this.guardar.setBackground(bluefocus);
-            this.guardar.setForeground(black);
-        }
+        } 
     }
 
     @Override
